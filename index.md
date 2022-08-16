@@ -6,6 +6,6 @@ layout: page
 ---
 
 
-<img src="/2021_Lake_District_Cropped-2.jpg" alt="Siddharth" style="max-width:241px;max-height:200px">
+<img src="/2022_SF_Rock_Cropped.jpg" alt="Siddharth" style="max-width:234px;max-height:220px">
 
-Hi! I am Siddharth Chandak, a graduate student in the Department of Electrical Engineering at Stanford University. I completed my B.Tech. in Electrical Engineering at IIT Bombay (India) in 2021.
+Hi! I am Siddharth Chandak, first year Ph.D. student in the Department of Electrical Engineering at Stanford University. I am advised by [Prof. Nick Bambos](https://profiles.stanford.edu/nicholas-bambos) and am also working with [Prof. Vivek S. Borkar](https://www.ee.iitb.ac.in/web/people/faculty/home/borkar) from IIT Bombay. I completed my B.Tech. in Electrical Engineering at IIT Bombay (India) in 2021.

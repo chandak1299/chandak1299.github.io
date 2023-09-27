@@ -21,6 +21,7 @@ description: My personal website
 # List of links in the navigation bar
 navbar-links:
   CV: "Siddharth_CV.pdf"
+  Publications: "publications"
   Contact: "contact"
 #  About Me: "aboutme"
 #  Resources:

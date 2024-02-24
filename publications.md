@@ -20,8 +20,8 @@ _International Conference on Autonomous Agents and Multiagent Systems (AAMAS), 2
 ### Reinforcement Learning and Stochastic Approximation
 - **Reinforcement Learning in Non-Markovian Environments**  
 S. Chandak, P. Shah, V. S. Borkar and P. Dodhia  
-Submitted to _Systems and Control Letters_  
-[[arXiv](https://arxiv.org/abs/2211.01595)]
+_Systems and Control Letters_, March 2024_  
+[[paper](https://www.sciencedirect.com/science/article/pii/S0167691124000392)] [[arXiv](https://arxiv.org/abs/2211.01595)]
 
 - **A Concentration Bound for LSPE($\lambda$)**  
 S. Chandak, V. S. Borkar and H. Dolhare  

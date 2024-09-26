@@ -5,7 +5,7 @@ permalink: /publications/
 ---
 
 ### Multi-Agent Control
-- **"Learning to Control Unknown Strongly Monotone Games**  
+- **Learning to Control Unknown Strongly Monotone Games**  
 S. Chandak, I. Bistritz and N. Bambos  
 Submitted to _IEEE Transactions on Automatic Control_  
 [[arXiv](https://arxiv.org/abs/2407.00575)]

@@ -5,10 +5,17 @@ permalink: /publications/
 ---
 
 ### Multi-Agent Control
+- **"Learning to Control Unknown Strongly Monotone Games**  
+S. Chandak, I. Bistritz and N. Bambos  
+Submitted to _IEEE Transactions on Automatic Control_  
+[[arXiv](https://arxiv.org/abs/2407.00575)]
+
 - **Tug of Peace: Distributed Learning for Quality of Service Guarantees**  
 S. Chandak, I. Bistritz and N. Bambos  
-To be presented at _IEEE Conference on Decision and Control (CDC), 2023_  
-[[full version](https://chandak1299.github.io/Papers/QoS-CDC-full.pdf)]
+_IEEE Conference on Decision and Control (CDC), 2023_  
+[[paper](https://ieeexplore.ieee.org/document/10383757)] 
+[[full version](https://chandak1299.github.io/Papers/QoS-CDC-full.pdf)] 
+[[slides](https://chandak1299.github.io/Slides/QoS_CDC_Presentation.pdf)]
 
 - **Equilibrium Bandits: Learning Optimal Equilibria of Unknown Dynamics**  
 S. Chandak, I. Bistritz and N. Bambos  
@@ -17,7 +24,17 @@ _International Conference on Autonomous Agents and Multiagent Systems (AAMAS), 2
 [[arXiv](https://arxiv.org/abs/2302.13653)]
 [[slides](https://chandak1299.github.io/Slides/AAMAS-Presentation-Equi.pdf)] [[poster](https://chandak1299.github.io/Slides/AAMAS-Poster-Equi.pdf)]
 
+- **Learning to Speak on Behalf of a Group: Medium Access Control for Sending a Shared Message**  
+S. U. Haque, S. Chandak, F. Chiariotti, D. Günduz and P. Popovski  
+_IEEE Communications Letters, August 2022_   
+[[paper](https://ieeexplore.ieee.org/document/9792282)]
+
 ### Reinforcement Learning and Stochastic Approximation
+- **A Concentration Bound for TD(0) with Function Approximation**  
+S. Chandak and V. S. Borkar  
+Submitted to _Stochastic Systems_  
+[[arXiv](https://arxiv.org/abs/2312.10424)]
+
 - **Reinforcement Learning in Non-Markovian Environments**  
 S. Chandak, P. Shah, V. S. Borkar and P. Dodhia  
 _Systems and Control Letters, March 2024_  
@@ -38,11 +55,11 @@ V. S. Borkar and S. Chandak
 _Systems and Control Letters, October 2021_    
 [[paper](https://www.sciencedirect.com/science/article/abs/pii/S0167691121001390)] [[arXiv](https://arxiv.org/abs/2104.05311)] [[slides](https://chandak1299.github.io/Slides/BTP1-Presentation.pdf)]
 
-### Older Publications
-- **Learning to Speak on Behalf of a Group: Medium Access Control for Sending a Shared Message**  
-S. U. Haque, S. Chandak, F. Chiariotti, D. Günduz and P. Popovski  
-_IEEE Communications Letters, August 2022_   
-[[paper](https://ieeexplore.ieee.org/document/9792282)]
+### Applications of Dynamic Programming
+- **Tiered Service Architecture for Remote Patient Monitoring**  
+S. Chandak, I. Thapa, N. Bambos and D. Scheinker  
+To be presented at _IEEE Healthcom, 2024_  
+[[arXiv](https://arxiv.org/abs/2406.18000)]
 
 - **Hidden Markov Model-Based Encoding for Time-Correlated IoT Sources**  
 S. Chandak, F. Chiariotti and P. Popovski  

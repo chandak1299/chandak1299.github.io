@@ -7,7 +7,7 @@ permalink: /publications/
 ### Multi-Agent Control
 - **Learning to Control Unknown Strongly Monotone Games**  
 S. Chandak, I. Bistritz and N. Bambos  
-Submitted to _IEEE Transactions on Automatic Control_  
+Submitted to _IEEE Transactions on Control of Network Systems (TCNS)_  
 [[arXiv](https://arxiv.org/abs/2407.00575)]
 
 - **Tug of Peace: Distributed Learning for Quality of Service Guarantees**  
@@ -28,6 +28,12 @@ _International Conference on Autonomous Agents and Multiagent Systems (AAMAS), 2
 S. U. Haque, S. Chandak, F. Chiariotti, D. Günduz and P. Popovski  
 _IEEE Communications Letters, August 2022_   
 [[paper](https://ieeexplore.ieee.org/document/9792282)]
+
+### Two-Time-Scale Stochastic Approximation
+- **Non-Expansive Mappings in Two-Time-Scale Stochastic Approximation: Finite Time Analysis**
+S. Chandak
+Submitted to _SIAM Journal on Control and Optimization_
+[[arXiv](https://arxiv.org/abs/2501.10806)]
 
 ### Reinforcement Learning and Stochastic Approximation
 - **A Concentration Bound for TD(0) with Function Approximation**  
@@ -56,10 +62,14 @@ _Systems and Control Letters, October 2021_
 [[paper](https://www.sciencedirect.com/science/article/abs/pii/S0167691121001390)] [[arXiv](https://arxiv.org/abs/2104.05311)] [[slides](https://chandak1299.github.io/Slides/BTP1-Presentation.pdf)]
 
 ### Applications of Dynamic Programming
+- **Optimal Control for Remote Patient Monitoring with Multidimensional Health States**
+S. Chandak, I. Thapa, N. Bambos and D. Scheinker  
+To be presented at _IEEE International Conference on Communications (ICC), 2025_
+
 - **Tiered Service Architecture for Remote Patient Monitoring**  
 S. Chandak, I. Thapa, N. Bambos and D. Scheinker  
-To be presented at _IEEE Healthcom, 2024_  
-[[arXiv](https://arxiv.org/abs/2406.18000)]
+_IEEE Healthcom, 2024_  
+[[paper](https://ieeexplore.ieee.org/document/10880780)] [[arXiv](https://arxiv.org/abs/2406.18000)]
 
 - **Hidden Markov Model-Based Encoding for Time-Correlated IoT Sources**  
 S. Chandak, F. Chiariotti and P. Popovski  

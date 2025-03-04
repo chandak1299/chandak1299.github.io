@@ -30,9 +30,9 @@ _IEEE Communications Letters, August 2022_
 [[paper](https://ieeexplore.ieee.org/document/9792282)]
 
 ### Two-Time-Scale Stochastic Approximation
-- **Non-Expansive Mappings in Two-Time-Scale Stochastic Approximation: Finite Time Analysis**
-S. Chandak
-Submitted to _SIAM Journal on Control and Optimization_
+- **Non-Expansive Mappings in Two-Time-Scale Stochastic Approximation: Finite Time Analysis**  
+S. Chandak  
+Submitted to _SIAM Journal on Control and Optimization_  
 [[arXiv](https://arxiv.org/abs/2501.10806)]
 
 ### Reinforcement Learning and Stochastic Approximation
@@ -62,7 +62,7 @@ _Systems and Control Letters, October 2021_
 [[paper](https://www.sciencedirect.com/science/article/abs/pii/S0167691121001390)] [[arXiv](https://arxiv.org/abs/2104.05311)] [[slides](https://chandak1299.github.io/Slides/BTP1-Presentation.pdf)]
 
 ### Applications of Dynamic Programming
-- **Optimal Control for Remote Patient Monitoring with Multidimensional Health States**
+- **Optimal Control for Remote Patient Monitoring with Multidimensional Health States**  
 S. Chandak, I. Thapa, N. Bambos and D. Scheinker  
 To be presented at _IEEE International Conference on Communications (ICC), 2025_
 

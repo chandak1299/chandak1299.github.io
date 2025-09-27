@@ -3,6 +3,20 @@ layout: page
 title: Publications
 permalink: /publications/
 ---
+_**Google Scholar page [HERE](https://scholar.google.com/citations?user=czi8jdYAAAAJ&hl=en).**_
+
+- **[Papers](#papers)**
+    - [Multi-Agent Control](#multi-agent-control)
+    - [Two-Time-Scale Stochastic Approximation](#tts-sa)
+    - [Reinforcement Learning and Stochastic Approximation](#rl-and-sa)
+    - [Applications of Dynamic Programming](#dp)
+- **[Talks](#talks)**
+
+<a id="papers"></a>
+
+## Papers
+
+<a id="multi-agent-control"></a>
 
 ### Multi-Agent Control
 - **Choose Your Battles: Distributed Learning Over Multiple Tug of War Games**  
@@ -34,6 +48,8 @@ S. U. Haque, S. Chandak, F. Chiariotti, D. Günduz and P. Popovski
 _IEEE Communications Letters, August 2022_   
 [[paper](https://ieeexplore.ieee.org/document/9792282)]
 
+<a id="tts-sa"></a>
+
 ### Two-Time-Scale Stochastic Approximation
 - **O(1/k) Finite-Time Bound for Non-Linear Two-Time-Scale Stochastic Approximation**  
 Submitted to _IEEE Transactions on Automatic Control (TAC)_  
@@ -49,6 +65,8 @@ S. Chandak
 Submitted to _SIAM Journal on Control and Optimization_  
 [[arXiv](https://arxiv.org/abs/2501.10806)] 
 [[slides - INFORMS APS 2025](https://chandak1299.github.io/Slides/INFORMS_APS_Talk.pdf)]
+
+<a id="rl-and-sa"></a>
 
 ### Reinforcement Learning and Stochastic Approximation
 - **A Concentration Bound for TD(0) with Function Approximation**  
@@ -76,6 +94,8 @@ V. S. Borkar and S. Chandak
 _Systems and Control Letters, October 2021_    
 [[paper](https://www.sciencedirect.com/science/article/abs/pii/S0167691121001390)] [[arXiv](https://arxiv.org/abs/2104.05311)] [[slides](https://chandak1299.github.io/Slides/BTP1-Presentation.pdf)]
 
+<a id="dp"></a>
+
 ### Applications of Dynamic Programming
 - **Optimal Control for Remote Patient Monitoring with Multidimensional Health States**  
 S. Chandak, I. Thapa, N. Bambos and D. Scheinker  
@@ -91,3 +111,30 @@ _IEEE Healthcom, 2024_
 S. Chandak, F. Chiariotti and P. Popovski  
 _IEEE Communications Letter, May 2021_  
 [[paper](https://ieeexplore.ieee.org/document/9291435)] [[arXiv](https://arxiv.org/abs/2101.07534)]
+
+<a id="talks"></a>
+
+## Talks
+
+### Invited Talks
+
+- **Learning to Control Unknown Multi-Agent Systems**  
+    - _Department of Electrical Engineering Seminar, IIT Bombay_, September 2025
+    - _STCS Seminar, Tata Institute of Fundamental Research (TIFR) Mumbai_, September 2025  
+    [[slides](https://chandak1299.github.io/Slides/Talk_Multi_Agent_Systems.pdf)] [[video - TIFR](https://www.youtube.com/live/2XChzJdpFYI?si=yDtFWDK5iMYR5lqR)]
+
+- **Non-Expansive Mappings in Two-Time-Scale Stochastic Approximation**  
+_INFORMS Applied Probability Society Conference_, July 2025  
+[[slides](https://chandak1299.github.io/Slides/INFORMS_APS_Talk.pdf)]
+
+### Other Talks
+
+- **Learning Desirable Equilibria for Unknown Multi-Agent Systems**  
+_Morgan Stanley_, August 2024  
+[[slides](https://chandak1299.github.io/Slides/Morgan_Stanley_Research_Talk.pdf)]
+
+- **Learning Desirable Equilibria for Unknown Multi-Agent Systems**  
+_Stanford EE PhD Qualifying Exam_, May 2023  
+[[slides](https://chandak1299.github.io/Slides/Quals_PhD_SC.pdf)]
+
+

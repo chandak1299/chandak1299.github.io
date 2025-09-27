@@ -126,7 +126,7 @@ _IEEE Communications Letter, May 2021_
 - **Non-Expansive Mappings in Two-Time-Scale Stochastic Approximation**  
 _INFORMS Applied Probability Society Conference_, July 2025  
 [[slides](https://chandak1299.github.io/Slides/INFORMS_APS_Talk.pdf)]
-
+<!-- 
 ### Other Talks
 
 - **Learning Desirable Equilibria for Unknown Multi-Agent Systems**  
@@ -135,6 +135,6 @@ _Morgan Stanley_, August 2024
 
 - **Learning Desirable Equilibria for Unknown Multi-Agent Systems**  
 _Stanford EE PhD Qualifying Exam_, May 2023  
-[[slides](https://chandak1299.github.io/Slides/Quals_PhD_SC.pdf)]
+[[slides](https://chandak1299.github.io/Slides/Quals_PhD_SC.pdf)] -->
 
 

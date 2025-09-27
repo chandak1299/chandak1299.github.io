@@ -5,6 +5,11 @@ permalink: /publications/
 ---
 
 ### Multi-Agent Control
+- **Choose Your Battles: Distributed Learning Over Multiple Tug of War Games**  
+S. Chandak, I. Bistritz and N. Bambos  
+Submitted to _IEEE Transactions on Automatic Control (TAC)_  
+[[arXiv](https://arxiv.org/abs/2509.20147)]
+
 - **Learning to Control Unknown Strongly Monotone Games**  
 S. Chandak, I. Bistritz and N. Bambos  
 Submitted to _IEEE Transactions on Control of Network Systems (TCNS)_  
@@ -30,10 +35,20 @@ _IEEE Communications Letters, August 2022_
 [[paper](https://ieeexplore.ieee.org/document/9792282)]
 
 ### Two-Time-Scale Stochastic Approximation
+- **O(1/k) Finite-Time Bound for Non-Linear Two-Time-Scale Stochastic Approximation**  
+Submitted to _IEEE Transactions on Automatic Control (TAC)_  
+[[arXiv](https://arxiv.org/abs/2504.19375)]
+
+- **Finite-Time Bounds for Two-Time-Scale Stochastic Approximation with Arbitrary Norm Contractions and Markovian Noise**  
+S. Chandak, S. U. Haque, N. Bambos  
+To be presented at _IEEE Conference on Decision and Control (CDC), 2025_  
+[[arXiv](https://arxiv.org/abs/2503.18391)]
+
 - **Non-Expansive Mappings in Two-Time-Scale Stochastic Approximation: Finite Time Analysis**  
 S. Chandak  
 Submitted to _SIAM Journal on Control and Optimization_  
-[[arXiv](https://arxiv.org/abs/2501.10806)]
+[[arXiv](https://arxiv.org/abs/2501.10806)] 
+[[slides - INFORMS APS 2025](https://chandak1299.github.io/Slides/INFORMS_APS_Talk.pdf)]
 
 ### Reinforcement Learning and Stochastic Approximation
 - **A Concentration Bound for TD(0) with Function Approximation**  
@@ -46,7 +61,7 @@ S. Chandak, P. Shah, V. S. Borkar and P. Dodhia
 _Systems and Control Letters, March 2024_  
 [[paper](https://www.sciencedirect.com/science/article/pii/S0167691124000392)] [[arXiv](https://arxiv.org/abs/2211.01595)]
 
-- **A Concentration Bound for LSPE($\lambda$)**  
+- **A Concentration Bound for LSPE($$\lambda$$)**  
 S. Chandak, V. S. Borkar and H. Dolhare  
 _Systems and Control Letters, January 2023_    
 [[paper](https://www.sciencedirect.com/science/article/abs/pii/S0167691122001955)] [[arXiv](https://arxiv.org/abs/2111.02644)]
@@ -64,14 +79,15 @@ _Systems and Control Letters, October 2021_
 ### Applications of Dynamic Programming
 - **Optimal Control for Remote Patient Monitoring with Multidimensional Health States**  
 S. Chandak, I. Thapa, N. Bambos and D. Scheinker  
-To be presented at _IEEE International Conference on Communications (ICC), 2025_
+_IEEE International Conference on Communications (ICC), 2025_  
+[[arXiv](https://arxiv.org/abs/2503.02292)] [[slides](https://chandak1299.github.io/Slides/Monitoring_ICC25.pdf)]
 
 - **Tiered Service Architecture for Remote Patient Monitoring**  
 S. Chandak, I. Thapa, N. Bambos and D. Scheinker  
 _IEEE Healthcom, 2024_  
-[[paper](https://ieeexplore.ieee.org/document/10880780)] [[arXiv](https://arxiv.org/abs/2406.18000)]
+[[paper](https://ieeexplore.ieee.org/document/10880780)] [[arXiv](https://arxiv.org/abs/2406.18000)] [[slides](https://chandak1299.github.io/Slides/Monitoring_Healthcom24.pdf)]
 
 - **Hidden Markov Model-Based Encoding for Time-Correlated IoT Sources**  
 S. Chandak, F. Chiariotti and P. Popovski  
 _IEEE Communications Letter, May 2021_  
-[[paper](https://ieeexplore.ieee.org/document/9291435)]
+[[paper](https://ieeexplore.ieee.org/document/9291435)] [[arXiv](https://arxiv.org/abs/2101.07534)]

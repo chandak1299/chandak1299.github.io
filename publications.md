@@ -61,7 +61,7 @@ S. Chandak, P. Shah, V. S. Borkar and P. Dodhia
 _Systems and Control Letters, March 2024_  
 [[paper](https://www.sciencedirect.com/science/article/pii/S0167691124000392)] [[arXiv](https://arxiv.org/abs/2211.01595)]
 
-- **A Concentration Bound for LSPE($$\lambda$$)**  
+- **A Concentration Bound for LSPE($\lambda$)**  
 S. Chandak, V. S. Borkar and H. Dolhare  
 _Systems and Control Letters, January 2023_    
 [[paper](https://www.sciencedirect.com/science/article/abs/pii/S0167691122001955)] [[arXiv](https://arxiv.org/abs/2111.02644)]

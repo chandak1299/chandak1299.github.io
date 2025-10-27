@@ -120,12 +120,12 @@ _IEEE Communications Letter, May 2021_
 
 - **O(1/k) Finite-Time Bound for Non-Linear Two-Time-Scale Stochastic Approximation**  
 _INFORMS Annual Meeting_, October 2025  
-[[slides](https://chandak1299.github.io/Slides/INFORMS_Annual_Meeting_Talk.pdf)]
+[[slides](https://chandak1299.github.io/Slides/INFORMS_Annual_Meeting_Talk.pdf)]  
 
 - **Learning to Control Unknown Multi-Agent Systems**  
     - _Department of Electrical Engineering Seminar, IIT Bombay_, September 2025
     - _STCS Seminar, Tata Institute of Fundamental Research (TIFR) Mumbai_, September 2025  
-    [[slides](https://chandak1299.github.io/Slides/Talk_Multi_Agent_Systems.pdf)] [[video - TIFR](https://www.youtube.com/live/2XChzJdpFYI?si=yDtFWDK5iMYR5lqR)]
+    [[slides](https://chandak1299.github.io/Slides/Talk_Multi_Agent_Systems.pdf)] [[video - TIFR](https://www.youtube.com/live/2XChzJdpFYI?si=yDtFWDK5iMYR5lqR)]  
 
 - **Non-Expansive Mappings in Two-Time-Scale Stochastic Approximation**  
 _INFORMS Applied Probability Society Conference_, July 2025  

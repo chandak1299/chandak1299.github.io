@@ -53,7 +53,7 @@ _IEEE Communications Letters, August 2022_
 ### Two-Time-Scale Stochastic Approximation
 - **O(1/k) Finite-Time Bound for Non-Linear Two-Time-Scale Stochastic Approximation**  
 Submitted to _IEEE Transactions on Automatic Control (TAC)_  
-[[arXiv](https://arxiv.org/abs/2504.19375)]
+[[arXiv](https://arxiv.org/abs/2504.19375)] [[slides - INFORMS Annual Meeting 2025](https://chandak1299.github.io/Slides/INFORMS_Annual_Meeting_Talk.pdf)]
 
 - **Finite-Time Bounds for Two-Time-Scale Stochastic Approximation with Arbitrary Norm Contractions and Markovian Noise**  
 S. Chandak, S. U. Haque, N. Bambos  
@@ -71,7 +71,7 @@ Submitted to _SIAM Journal on Control and Optimization_
 ### Reinforcement Learning and Stochastic Approximation
 - **A Concentration Bound for TD(0) with Function Approximation**  
 S. Chandak and V. S. Borkar  
-Submitted to _Stochastic Systems_  
+_Stochastic Systems, to appear_  
 [[arXiv](https://arxiv.org/abs/2312.10424)]
 
 - **Reinforcement Learning in Non-Markovian Environments**  

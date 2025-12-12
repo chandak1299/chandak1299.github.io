@@ -57,8 +57,8 @@ Submitted to _IEEE Transactions on Automatic Control (TAC)_
 
 - **Finite-Time Bounds for Two-Time-Scale Stochastic Approximation with Arbitrary Norm Contractions and Markovian Noise**  
 S. Chandak, S. U. Haque, N. Bambos  
-To be presented at _IEEE Conference on Decision and Control (CDC), 2025_  
-[[arXiv](https://arxiv.org/abs/2503.18391)]
+_IEEE Conference on Decision and Control (CDC), 2025_  
+[[arXiv](https://arxiv.org/abs/2503.18391)] [[slides](https://chandak1299.github.io/Slides/TTS_Expectation_CDC_Presentation.pdf)]  
 
 - **Non-Expansive Mappings in Two-Time-Scale Stochastic Approximation: Finite Time Analysis**  
 S. Chandak  

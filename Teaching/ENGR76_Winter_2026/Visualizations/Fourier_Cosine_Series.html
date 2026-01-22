@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Even Fourier Cosine Series (Period 1)</title>
+  <style>
+    :root{
+      --bg:#ffffff;
+      --fg:#111;
+      --muted:#666;
+      --grid:#e9e9e9;
+      --panel:#fafafa;
+      --shadow: 0 8px 24px rgba(0,0,0,0.08);
+      --r: 14px;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      color:var(--fg);
+      background:var(--bg);
+      line-height:1.35;
+    }
+    .wrap{
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 16px 16px 28px;
+    }
+    header{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap: 12px;
+      padding: 8px 2px 14px;
+      border-bottom: 1px solid var(--grid);
+      margin-bottom: 14px;
+    }
+    h1{
+      font-size: 18px;
+      margin:0;
+      letter-spacing: 0.2px;
+    }
+    .controls{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .badge{
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .kbox{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding: 8px 10px;
+      background: var(--panel);
+      border: 1px solid var(--grid);
+      border-radius: 999px;
+    }
+    input[type="range"]{
+      width: 220px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1.2fr 1fr;
+      gap: 12px;
+    }
+
+    .colhead{
+      font-size: 12px;
+      color: var(--muted);
+      padding: 6px 8px;
+    }
+
+    .cell{
+      background: #fff;
+      border: 1px solid var(--grid);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      padding: 10px;
+      min-height: 180px;
+      display:flex;
+      flex-direction:column;
+      gap: 8px;
+    }
+
+    .rowtitle{
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 2px 2px 0;
+    }
+    .rowtitle .name{
+      font-weight: 650;
+      font-size: 13px;
+    }
+    .rowtitle .meta{
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    canvas{ width: 100%; height: 140px; }
+
+    @media (max-width: 980px){
+      .grid{ grid-template-columns: 1fr; }
+      canvas{ height: 160px; }
+      header{ align-items:flex-start; flex-direction:column; }
+      input[type="range"]{ width: min(360px, 70vw); }
+    }
+
+    .legend{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      font-size: 12px;
+      color: var(--muted);
+      padding: 0 2px;
+    }
+    .swatch{ width: 10px; height: 10px; border-radius: 2px; display:inline-block; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Fourier Cosine Series</h1>
+        <div class="badge">Three rows (square, triangle, exponential-decay example). Left: original. Middle: original (light gray) + reconstruction (blue). Right: stem plot of bⱼ. Common slider controls K.</div>
+      </div>
+      <div class="controls">
+        <div class="kbox">
+          <div style="font-size:12px;color:var(--muted);">K</div>
+          <input id="k" type="range" min="0" max="60" value="12" step="1" />
+          <div id="kval" style="font-variant-numeric: tabular-nums; min-width: 26px; text-align:right;">12</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="grid" style="margin-bottom: 8px;">
+      <div class="colhead">Original function (even, period 1)</div>
+      <div class="colhead">Reconstruction using K coefficients</div>
+      <div class="colhead">Cosine-series coefficients bⱼ (stem)</div>
+    </div>
+
+    <div class="grid" id="rows"></div>
+
+    <div class="legend" style="margin-top: 10px;">
+      <span class="swatch" style="background:#cfcfcf"></span> original (in middle column)
+      <span class="swatch" style="background:#2f6fed"></span> reconstruction (in middle column)
+      <span class="swatch" style="background:#111"></span> stems (right column)
+    </div>
+  </div>
+
+  <script>
+    // --------- helpers ---------
+    const TAU = 2*Math.PI;
+
+    function wrapToHalf(t){
+      // Map t to [-0.5, 0.5)
+      t = ((t % 1) + 1) % 1; // [0,1)
+      if (t >= 0.5) t -= 1;  // [-0.5,0.5)
+      return t;
+    }
+
+    function linspace(a,b,n){
+      const arr = new Array(n);
+      const step = (b-a)/(n-1);
+      for(let i=0;i<n;i++) arr[i] = a + i*step;
+      return arr;
+    }
+
+    function mean(arr){
+      let s=0; for(const v of arr) s+=v; return s/arr.length;
+    }
+
+    function drawAxes(ctx, W, H, opts={}){
+      const pad = opts.pad ?? 26;
+      const gx = opts.gx ?? 6;
+      const gy = opts.gy ?? 4;
+      ctx.clearRect(0,0,W,H);
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(0,0,W,H);
+
+      // grid
+      ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--grid').trim() || '#e9e9e9';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for(let i=0;i<=gx;i++){
+        const x = pad + (W-2*pad)*i/gx;
+        ctx.moveTo(x, pad);
+        ctx.lineTo(x, H-pad);
+      }
+      for(let j=0;j<=gy;j++){
+        const y = pad + (H-2*pad)*j/gy;
+        ctx.moveTo(pad, y);
+        ctx.lineTo(W-pad, y);
+      }
+      ctx.stroke();
+
+      // border
+      ctx.strokeStyle = '#ddd';
+      ctx.beginPath();
+      ctx.rect(pad, pad, W-2*pad, H-2*pad);
+      ctx.stroke();
+
+      return {pad};
+    }
+
+    function plotLine(ctx, W, H, xs, ys, yMin, yMax, color, lineWidth=2, pad=26){
+      const x0 = pad, x1 = W-pad;
+      const y0 = H-pad, y1 = pad;
+      const sx = (x1-x0)/(xs[xs.length-1]-xs[0]);
+      const sy = (y1-y0)/(yMax-yMin);
+
+      ctx.strokeStyle = color;
+      ctx.lineWidth = lineWidth;
+      ctx.beginPath();
+      for(let i=0;i<xs.length;i++){
+        const x = x0 + (xs[i]-xs[0])*sx;
+        const y = y0 + (ys[i]-yMin)*sy;
+        if(i===0) ctx.moveTo(x,y);
+        else ctx.lineTo(x,y);
+      }
+      ctx.stroke();
+
+      // x-axis (y=0) if in range
+      if(yMin < 0 && yMax > 0){
+        const yAxis = y0 + (0-yMin)*sy;
+        ctx.strokeStyle = '#bbb';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(x0, yAxis);
+        ctx.lineTo(x1, yAxis);
+        ctx.stroke();
+      }
+    }
+
+    function drawStems(ctx, W, H, bs, yMin, yMax, pad=26){
+      const x0 = pad, x1 = W-pad;
+      const y0 = H-pad, y1 = pad;
+      const N = bs.length; // includes b0 at index 0
+      const sy = (y1-y0)/(yMax-yMin);
+
+      // baseline y=0
+      let yBase;
+      if(yMin < 0 && yMax > 0) yBase = y0 + (0-yMin)*sy;
+      else yBase = y0;
+
+      ctx.strokeStyle = '#111';
+      ctx.lineWidth = 1.25;
+      ctx.fillStyle = '#111';
+
+      for(let j=0;j<N;j++){
+        const x = x0 + (x1-x0)*(N===1 ? 0.5 : j/(N-1));
+        const y = y0 + (bs[j]-yMin)*sy;
+        ctx.beginPath();
+        ctx.moveTo(x, yBase);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(x, y, 2.2, 0, TAU);
+        ctx.fill();
+      }
+
+      // x-axis labels: 0, 1, 2, ... lightly
+      ctx.fillStyle = '#777';
+      ctx.font = '11px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      const maxLabels = Math.min(N, 10);
+      for(let i=0;i<maxLabels;i++){
+        const j = Math.round(i*(N-1)/(maxLabels-1 || 1));
+        const x = x0 + (x1-x0)*(N===1 ? 0.5 : j/(N-1));
+        ctx.fillText(String(j), x, H-pad+6);
+      }
+    }
+
+    // --------- functions (even, period 1) ---------
+    // We define them on t in [-0.5, 0.5) using u = |t|.
+
+    function squareEven(t){
+      const u = Math.abs(wrapToHalf(t));
+      // even square wave: +1 for |t|<1/4, -1 for 1/4<|t|<1/2
+      return (u < 0.25) ? 1 : -1;
+    }
+
+    function squareDiscontinuities(){
+      // locations of jumps in [-1,1]
+      return [-0.75,-0.25,0.25,0.75];
+    }
+
+    function trapezoidEven(t){
+      const u = Math.abs(wrapToHalf(t));
+      // Continuous trapezium with equal flat regions at +1 and -1.
+      // Sharpness is controlled by making the transition very narrow (almost vertical).
+      const a = 0.18; // half-width of flat top (+1)
+      const eps = 0.08; // wider transition -> less sharp
+      const b = a + eps;
+      if(u <= a) return 1;
+      if(u >= b) return -1;
+      // moderately steep linear ramp between +1 and -1
+      return 1 - 2*(u-a)/(b-a);
+    }
+    function kinkEven(t){
+      const u = Math.abs(wrapToHalf(t));
+      // x(t)=t^2 + |t| on [-1/2,1/2), periodized (even)
+      return u*u + u;
+    }
+
+    function expCosClosedForm(t){
+      // Defined via its cosine coefficients b_j = exp(- j^{1/5})
+      // No simple closed form; we evaluate via truncated series elsewhere
+      return 0; // placeholder (not used for direct evaluation)
+    }
+
+    // --------- coefficient formulas for the series x(t)=b0 + Σ_{j>=1} b_j cos(2π j t) ---------
+
+    function coeffsSquare(Jmax){
+      // b0 = ∫_{-1/2}^{1/2} x(t) dt = 0
+      // b_j = 2 ∫_{-1/2}^{1/2} x(t) cos(2π j t) dt = 4 ∫_{0}^{1/2} x(t) cos(2π j t) dt
+      // with x(t)=+1 on [0,1/4), -1 on [1/4,1/2)
+      const bs = new Array(Jmax+1).fill(0);
+      bs[0] = 0;
+      for(let j=1;j<=Jmax;j++){
+        const a = TAU*j;
+        // 4*( ∫_0^{1/4} cos(a t) dt - ∫_{1/4}^{1/2} cos(a t) dt )
+        const I1 = (Math.sin(a*(0.25)) - Math.sin(a*0))/a;
+        const I2 = (Math.sin(a*(0.5)) - Math.sin(a*(0.25)))/a;
+        bs[j] = 4*(I1 - I2);
+      }
+      return bs;
+    }
+
+    // --------- numeric coefficients for general even, period-1 functions ---------
+    // b0 = ∫_{-1/2}^{1/2} x(t) dt
+    // b_j = 2 ∫_{-1/2}^{1/2} x(t) cos(2π j t) dt
+    // We approximate with a trapezoidal rule on a fine uniform grid.
+
+    const coeffCache = new Map();
+
+    function coeffsFromFn(fn, Jmax){
+      const key = fn.name + ':' + Jmax;
+      if(coeffCache.has(key)) return coeffCache.get(key);
+
+      const N = 8192; // fine grid for visibly accurate coefficients up to ~60 harmonics
+      const a = -0.5, b = 0.5;
+      const dt = (b-a)/(N-1);
+
+      const t = new Array(N);
+      const x = new Array(N);
+      for(let i=0;i<N;i++){
+        t[i] = a + i*dt;
+        x[i] = fn(t[i]);
+      }
+
+      // trapezoid weights
+      const w0 = 0.5, w1 = 1.0;
+
+      const bs = new Array(Jmax+1).fill(0);
+
+      // b0
+      let s0 = 0;
+      for(let i=0;i<N;i++) s0 += x[i] * (i===0 || i===N-1 ? w0 : w1);
+      bs[0] = s0 * dt;
+
+      for(let j=1;j<=Jmax;j++){
+        let sj = 0;
+        const a_j = TAU*j;
+        for(let i=0;i<N;i++){
+          const wi = (i===0 || i===N-1) ? w0 : w1;
+          sj += x[i] * Math.cos(a_j * t[i]) * wi;
+        }
+        bs[j] = 2 * sj * dt;
+      }
+
+      coeffCache.set(key, bs);
+      return bs;
+    }
+
+    function coeffsTrap(Jmax){
+      return coeffsFromFn(trapezoidEven, Jmax);
+    }
+
+    function coeffsKink(Jmax){
+      return coeffsFromFn(kinkEven, Jmax);
+    }
+
+    function coeffsExp(Jmax){
+      // b_j = exp(-j), b0 = 0
+      const bs = new Array(Jmax+1).fill(0);
+      bs[0] = 0;
+      for(let j=1;j<=Jmax;j++) bs[j] = Math.exp(-j);
+      return bs;
+    }
+
+    function reconstruct(t, bs, K){
+      let s = bs[0];
+      for(let j=1;j<=K;j++) s += bs[j]*Math.cos(TAU*j*t);
+      return s;
+    }
+
+    // --------- UI build ---------
+    const rowsEl = document.getElementById('rows');
+
+    const rows = [
+      { key:'square', name:'Square wave', fn: squareEven, coeffs: coeffsSquare, meta:'even, ±1, discontinuous' },
+      { key:'trap', name:'Trapezoid wave', fn: trapezoidEven, coeffs: coeffsTrap, meta:'even, continuous, corners (flat top + ramps)' },
+            { key:'exp', name:'Exponential-decay cosine series', fn: null, coeffs: coeffsExp, meta:'bⱼ = e^{-j}' }
+    ];
+
+    function makeCell(titleLeft, metaRight){
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      const head = document.createElement('div');
+      head.className = 'rowtitle';
+      const nm = document.createElement('div');
+      nm.className = 'name';
+      nm.textContent = titleLeft;
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      meta.textContent = metaRight;
+      head.appendChild(nm);
+      head.appendChild(meta);
+      const c = document.createElement('canvas');
+      cell.appendChild(head);
+      cell.appendChild(c);
+      return {cell, canvas: c};
+    }
+
+    const canvasMap = new Map();
+
+    for(const r of rows){
+      // col 1
+      const c1 = makeCell(r.name, 'original');
+      // col 2
+      const c2 = makeCell(r.name, 'original + reconstruction');
+      // col 3
+      const c3 = makeCell(r.name, 'bⱼ stems');
+
+      rowsEl.appendChild(c1.cell);
+      rowsEl.appendChild(c2.cell);
+      rowsEl.appendChild(c3.cell);
+
+      canvasMap.set(r.key, {orig: c1.canvas, recon: c2.canvas, stems: c3.canvas});
+    }
+
+    // Resize canvases to device pixels
+    function resizeCanvas(canvas){
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      const w = Math.max(10, Math.round(rect.width * dpr));
+      const h = Math.max(10, Math.round(rect.height * dpr));
+      if(canvas.width !== w || canvas.height !== h){
+        canvas.width = w;
+        canvas.height = h;
+      }
+      return {W:canvas.width, H:canvas.height, dpr};
+    }
+
+    function computeYRange(vals, padFrac=0.12){
+      let mn = Infinity, mx = -Infinity;
+      for(const v of vals){ mn = Math.min(mn,v); mx = Math.max(mx,v); }
+      if(!isFinite(mn) || !isFinite(mx)) return {yMin:-1, yMax:1};
+      if(mx - mn < 1e-9){
+        mx += 1; mn -= 1;
+      }
+      const pad = (mx - mn)*padFrac;
+      return {yMin: mn - pad, yMax: mx + pad};
+    }
+
+    function renderAll(){
+      const K = Number(document.getElementById('k').value);
+      document.getElementById('kval').textContent = String(K);
+
+      // One period is length 1. Plot from -T to T with T=1 (two full periods).
+      const tGridWide = linspace(-1, 1, 2400);
+      // Keep a one-period grid available if needed elsewhere.
+      const tGrid = linspace(-0.5, 0.5, 1200);
+
+      for(const r of rows){
+
+        const canv = canvasMap.get(r.key);
+
+        // coefficients up to maxK for stem plot; for reconstruction we use K
+        const maxK = Number(document.getElementById('k').max);
+        const bs = r.coeffs(maxK);
+
+        // original + recon samples
+        const yOrig = r.fn ? tGrid.map(r.fn) : tGrid.map(t => reconstruct(t, bs, maxK));
+        const yOrigWide = r.fn ? tGridWide.map(r.fn) : tGridWide.map(t => reconstruct(t, bs, maxK));
+        const yRecon = tGrid.map(t => reconstruct(t, bs, K));
+        const yReconWide = tGridWide.map(t => reconstruct(t, bs, K));
+
+        // y-range for original plots
+        const yRangeOrig = computeYRange(yOrigWide);
+        const yRangeRecon = computeYRange(yOrigWide.concat(yReconWide));
+
+        // stems range: include b0..bK for nicer scaling
+        const bShown = bs.slice(0, Math.max(1, K+1));
+        const yRangeB = computeYRange(bShown);
+
+        // --- Original column ---
+        {
+          const {W,H} = resizeCanvas(canv.orig);
+          const ctx = canv.orig.getContext('2d');
+          const {pad} = drawAxes(ctx,W,H,{pad:26});
+          // draw square wave WITHOUT connecting vertical edges
+          if(r.key==='square'){
+            // draw as horizontal segments only
+            const yHigh = yOrigWide.map(v=>v);
+            const ctx0 = ctx;
+            ctx0.strokeStyle = '#111';
+            ctx0.lineWidth = 2;
+            ctx0.beginPath();
+            let prevY = null;
+            for(let i=0;i<tGridWide.length;i++){
+              const v = yOrigWide[i];
+              if(prevY !== null && v !== prevY){
+                ctx0.stroke();
+                ctx0.beginPath();
+                prevY = v;
+                continue;
+              }
+              const x = pad + (tGridWide[i]-(-1))*(W-2*pad)/2;
+              const y = (H-pad) + (v-yRangeOrig.yMin)*(pad-(H-pad))/(yRangeOrig.yMax-yRangeOrig.yMin);
+              if(prevY===null) ctx0.moveTo(x,y); else ctx0.lineTo(x,y);
+              prevY = v;
+            }
+            ctx0.stroke();
+          } else {
+            plotLine(ctx,W,H,tGridWide,yOrigWide,yRangeOrig.yMin,yRangeOrig.yMax,'#111',2,pad);
+          }
+
+          // dotted vertical lines at discontinuities (square wave only)
+          if(r.key==='square'){
+            ctx.save();
+            ctx.setLineDash([12,14]);
+            ctx.strokeStyle = '#999';
+            ctx.lineWidth = 1.5;
+            const xs = squareDiscontinuities();
+            const x0 = pad, x1 = W-pad;
+            const y0 = H-pad, y1 = pad;
+            for(const xv of xs){
+              const x = x0 + (xv - (-1))*(x1-x0)/2;
+              ctx.beginPath();
+              ctx.moveTo(x, y0);
+              ctx.lineTo(x, y1);
+              ctx.stroke();
+            }
+            ctx.restore();
+          }
+          // dotted vertical lines at discontinuities (square wave only)
+          if(r.key==='square'){
+            ctx.save();
+            ctx.setLineDash([8,10]);
+            ctx.strokeStyle = '#999';
+            ctx.lineWidth = 1.2;
+            const xs = squareDiscontinuities();
+            const x0 = pad, x1 = W-pad;
+            const y0 = H-pad, y1 = pad;
+            for(const xv of xs){
+              const x = x0 + (xv - (-1))*(x1-x0)/(2);
+              ctx.beginPath();
+              ctx.moveTo(x, y0);
+              ctx.lineTo(x, y1);
+              ctx.stroke();
+            }
+            ctx.restore();
+          }
+        }
+
+        // --- Reconstruction column ---
+        {
+          const {W,H} = resizeCanvas(canv.recon);
+          const ctx = canv.recon.getContext('2d');
+          const {pad} = drawAxes(ctx,W,H,{pad:26});
+          plotLine(ctx,W,H,tGridWide,yOrigWide,yRangeRecon.yMin,yRangeRecon.yMax,'#cfcfcf',2,pad);
+          plotLine(ctx,W,H,tGridWide,yReconWide,yRangeRecon.yMin,yRangeRecon.yMax,'#2f6fed',2.4,pad);
+        }
+
+        // --- Stems column ---
+        {
+          const {W,H} = resizeCanvas(canv.stems);
+          const ctx = canv.stems.getContext('2d');
+          const {pad} = drawAxes(ctx,W,H,{pad:26});
+          drawStems(ctx,W,H,bShown,yRangeB.yMin,yRangeB.yMax,pad);
+        }
+      }
+    }
+
+    // Attach events
+    const kSlider = document.getElementById('k');
+    kSlider.addEventListener('input', renderAll);
+    window.addEventListener('resize', renderAll);
+
+    // initial render
+    renderAll();
+  </script>
+</body>
+</html>

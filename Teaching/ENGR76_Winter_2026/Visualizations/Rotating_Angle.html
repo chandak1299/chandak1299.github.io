@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Rotating Angle Visualization</title>
+  <style>
+    /* base / reset */
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      margin: 0;
+      color: #111;
+      background: #fff;
+      line-height: 1.5;
+    }
+
+    main {
+      max-width: 1120px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1rem 1.25rem;
+    }
+
+    .row { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; margin-top: 14px; }
+
+    /* canvas: responsive without CSS blur via DPR-aware backing store in JS */
+    canvas {
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1120 / 600;
+    }
+
+    button { padding: 8px 12px; border-radius: 10px; border: 1px solid #bbb; background: #fff; cursor: pointer; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    input[type="range"] { width: 320px; }
+    select { padding: 6px 10px; border-radius: 10px; border: 1px solid #bbb; background: #fff; }
+
+    .mono { font-variant-numeric: tabular-nums; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    .math { font-variant-numeric: tabular-nums; }
+    .kpi { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 10px; }
+    .kpi > div { padding: 6px 10px; border: 1px solid #ddd; border-radius: 12px; }
+
+    @media (max-width: 768px) {
+      main { padding: 0.75rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h2 class="math">Rotating Angle Visualization</h2>
+
+    <!-- width/height attrs kept as a baseline aspect; JS will resize backing store for crispness -->
+    <canvas id="c" width="1120" height="600"></canvas>
+
+    <div class="row">
+      <label class="math">Frequency f (Hz):
+        <select id="f">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5" selected>5</option>
+        </select>
+      </label>
+
+      <label class="math">Slow-mo (time scale):
+        <input id="speed" type="range" min="0.05" max="1.00" step="0.01" value="0.25">
+        <span class="mono" id="speedVal">0.25</span>
+      </label>
+
+      <button id="start">Play</button>
+      <button id="pause" disabled>Pause</button>
+      <button id="reset">Reset</button>
+    </div>
+
+    <div class="kpi">
+      <div class="math">f = <span class="mono" id="fVal">5</span> Hz</div>
+      <div class="math">t = <span class="mono" id="tVal">0.000</span> s</div>
+      <div class="math">θ(t) = 2π · (<span class="mono" id="fInTheta">5</span>) · (<span class="mono" id="tInTheta">0.000</span>)</div>
+      <div class="math">sin(2π f t) = <span class="mono" id="sinVal">0.000</span></div>
+      <div class="math">cos(2π f t) = <span class="mono" id="cosVal">1.000</span></div>
+      <div class="math">Status: <span class="mono" id="status">idle</span></div>
+    </div>
+  </main>
+
+<script>
+(() => {
+  const canvas = document.getElementById('c');
+  const ctx = canvas.getContext('2d');
+
+  const fSelect = document.getElementById('f');
+  const speedSlider = document.getElementById('speed');
+  const speedVal = document.getElementById('speedVal');
+
+  const startBtn = document.getElementById('start');
+  const pauseBtn = document.getElementById('pause');
+  const resetBtn = document.getElementById('reset');
+
+  const fVal = document.getElementById('fVal');
+  const tVal = document.getElementById('tVal');
+  const fInTheta = document.getElementById('fInTheta');
+  const tInTheta = document.getElementById('tInTheta');
+  const sinVal = document.getElementById('sinVal');
+  const cosVal = document.getElementById('cosVal');
+  const statusEl = document.getElementById('status');
+
+  const TWO_PI = Math.PI * 2;
+  const CYCLES = 5;
+
+  // ----- HiDPI / crisp canvas rendering -----
+  // We draw in CSS pixels (CW, CH). Backing store is CW*devicePixelRatio.
+  let CW = canvas.width;
+  let CH = canvas.height;
+
+  function resizeCanvasForDPR(){
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+
+    CW = rect.width;
+    CH = rect.height;
+
+    const bw = Math.max(1, Math.round(CW * dpr));
+    const bh = Math.max(1, Math.round(CH * dpr));
+
+    if (canvas.width !== bw || canvas.height !== bh) {
+      canvas.width = bw;
+      canvas.height = bh;
+    }
+
+    // One CSS pixel == one unit in our drawing code
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  // ----- Animation state -----
+  let running = false;
+  let stopped = false;
+  let t = 0;
+  let lastTs = null;
+
+  // Hover/scrub state
+  let hover = { active: false, t: 0 };
+
+  function getF(){ return parseFloat(fSelect.value); }
+  function getSpeed(){ return parseFloat(speedSlider.value); }
+  function setStatus(s){ statusEl.textContent = s; }
+
+  function tWindow(){ return CYCLES / getF(); } // plot exactly 5 cycles
+  function theta(tt){ return TWO_PI * getF() * tt; }
+  function clamp(x,a,b){ return Math.max(a,Math.min(b,x)); }
+
+  function layout(){
+    const W = CW, H = CH;
+    const pad=24, gap=32;
+    const leftW=Math.floor(W*0.45);
+    return {
+      W,H,pad,gap,
+      left:{x:pad,y:pad,w:leftW,h:H-2*pad},
+      right:{x:pad+leftW+gap,y:pad,w:W-2*pad-gap-leftW,h:H-2*pad}
+    };
+  }
+
+  function plotRects(){
+    const { right } = layout();
+
+    // room for axis labels and the frequency/period line under the cosine plot
+    const outerPadL = 72;
+    const outerPadR = 20;
+    const outerPadT = 52;
+    const outerPadB = 90;
+    const splitGap  = 36;
+
+    const innerX = right.x + outerPadL;
+    const innerY = right.y + outerPadT;
+    const innerW = right.w - outerPadL - outerPadR;
+    const innerH = right.h - outerPadT - outerPadB;
+
+    const hEach = (innerH - splitGap) / 2;
+    const top = { x: innerX, y: innerY, w: innerW, h: hEach };
+    const bot = { x: innerX, y: innerY + hEach + splitGap, w: innerW, h: hEach };
+
+    return { top, bot, right };
+  }
+
+  // time-axis ticks at 1/f,2/f,...,5/f (numbers) plus 0
+  function drawTimeAxis(plot){
+    const f = getF();
+    const T = tWindow();
+
+    ctx.strokeStyle='#e6e6e6';
+    ctx.fillStyle='#444';
+    ctx.font='12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+
+    function tick(tt, label, isMajor){
+      const x = plot.x + (tt / T) * plot.w;
+      ctx.beginPath();
+      ctx.moveTo(x, plot.y + plot.h);
+      ctx.lineTo(x, plot.y + plot.h + (isMajor ? 8 : 6));
+      ctx.stroke();
+      const w = ctx.measureText(label).width;
+      ctx.fillText(label, x - w/2, plot.y + plot.h + (isMajor ? 26 : 22));
+    }
+
+    tick(0, '0.00', true);
+
+    for (let k = 1; k <= CYCLES; k++) {
+      const tt = k / f;
+      const x = plot.x + (tt / T) * plot.w;
+
+      // faint grid line
+      ctx.strokeStyle = '#f0f0f0';
+      ctx.beginPath(); ctx.moveTo(x, plot.y); ctx.lineTo(x, plot.y + plot.h); ctx.stroke();
+
+      ctx.strokeStyle = '#e6e6e6';
+      tick(tt, tt.toFixed(2), k === CYCLES);
+    }
+
+    const lbl='time t (s)';
+    const wlbl=ctx.measureText(lbl).width;
+    ctx.fillText(lbl, plot.x + plot.w/2 - wlbl/2, plot.y + plot.h + 52);
+  }
+
+  // Smooth analytic curve
+  function drawAnalyticCurve(plot, which){
+    const f = getF();
+    const T = tWindow();
+
+    const y0 = plot.y + plot.h/2;
+    const amp = plot.h/2;
+
+    ctx.strokeStyle = '#111';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+
+    const N = Math.max(1000, Math.floor(plot.w));
+    for (let i = 0; i <= N; i++) {
+      const u = i / N;
+      const tt = u * T;
+      const th = TWO_PI * f * tt;
+      const val = (which === 'sin') ? Math.sin(th) : Math.cos(th);
+      const x = plot.x + u * plot.w;
+      const y = y0 - val * amp;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+
+  function drawPlot(plot, title, which, markerT){
+    ctx.strokeStyle='#ddd';
+    ctx.lineWidth=1;
+    ctx.strokeRect(plot.x, plot.y, plot.w, plot.h);
+
+    const y0 = plot.y + plot.h/2;
+    ctx.strokeStyle='#e6e6e6';
+    ctx.beginPath(); ctx.moveTo(plot.x, y0); ctx.lineTo(plot.x + plot.w, y0); ctx.stroke();
+
+    ctx.fillStyle='#111';
+    ctx.font='14px system-ui, -apple-system, Segoe UI, Roboto, sans-serif';
+    ctx.fillText(title, plot.x + 8, plot.y + 18);
+
+    // y labels
+    ctx.fillStyle='#444';
+    ctx.font='12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+    ctx.fillText('1', plot.x - 28, plot.y + 12);
+    ctx.fillText('0', plot.x - 28, y0 + 4);
+    ctx.fillText('-1', plot.x - 32, plot.y + plot.h - 2);
+
+    drawAnalyticCurve(plot, which);
+
+    // marker
+    const T = tWindow();
+    const xm = plot.x + clamp(markerT / T, 0, 1) * plot.w;
+    const th = theta(markerT);
+    const val = (which === 'sin') ? Math.sin(th) : Math.cos(th);
+    const ym = y0 - val * (plot.h/2);
+
+    ctx.strokeStyle = hover.active ? '#777' : '#bbb';
+    ctx.lineWidth = hover.active ? 2 : 1;
+    ctx.beginPath(); ctx.moveTo(xm, plot.y); ctx.lineTo(xm, plot.y + plot.h); ctx.stroke();
+
+    ctx.fillStyle = '#000';
+    ctx.beginPath(); ctx.arc(xm, ym, 4, 0, TWO_PI); ctx.fill();
+
+    drawTimeAxis(plot);
+  }
+
+  function draw(){
+    const { left, right } = layout();
+    ctx.clearRect(0,0,CW,CH);
+
+    const f = getF();
+    const tDrive = hover.active ? hover.t : t;
+
+    const th = theta(tDrive);
+    const s = Math.sin(th);
+    const c = Math.cos(th);
+
+    // ---- Unit circle ----
+    const cx = left.x + left.w*0.40;
+    const cy = left.y + left.h*0.50;
+    const R  = Math.min(left.w, left.h)*0.34;
+
+    // axes
+    ctx.strokeStyle='#e0e0e0';
+    ctx.lineWidth=1;
+    ctx.beginPath();
+    ctx.moveTo(cx-R*1.2, cy); ctx.lineTo(cx+R*1.2, cy);
+    ctx.moveTo(cx, cy-R*1.2); ctx.lineTo(cx, cy+R*1.2);
+    ctx.stroke();
+
+    // circle
+    ctx.strokeStyle='#222';
+    ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(cx, cy, R, 0, TWO_PI); ctx.stroke();
+
+    // radius
+    const px = cx + R*Math.cos(th);
+    const py = cy - R*Math.sin(th);
+    ctx.strokeStyle='#0a0a0a';
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(px,py); ctx.stroke();
+
+    // point
+    ctx.fillStyle='#000';
+    ctx.beginPath(); ctx.arc(px,py,5,0,TWO_PI); ctx.fill();
+
+    // angle arc
+    const wrapped = ((th % TWO_PI) + TWO_PI) % TWO_PI;
+    ctx.strokeStyle='#555';
+    ctx.lineWidth=3;
+    ctx.beginPath(); ctx.arc(cx,cy,R*0.55,0,-wrapped,true); ctx.stroke();
+
+    // sin bar
+    const vx = cx + R + 44;
+    ctx.strokeStyle='#aaa';
+    ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(vx, cy-R); ctx.lineTo(vx, cy+R); ctx.stroke();
+    ctx.fillStyle='#000';
+    ctx.beginPath(); ctx.arc(vx, cy - s*R, 5, 0, TWO_PI); ctx.fill();
+
+    // cos bar
+    const hy = cy + R + 44;
+    ctx.strokeStyle='#aaa';
+    ctx.beginPath(); ctx.moveTo(cx-R, hy); ctx.lineTo(cx+R, hy); ctx.stroke();
+    ctx.fillStyle='#000';
+    ctx.beginPath(); ctx.arc(cx + c*R, hy, 5, 0, TWO_PI); ctx.fill();
+
+    // live values block
+    const tx = left.x + left.w*0.60;
+    const ty = left.y + 28;
+    ctx.fillStyle = '#111';
+    ctx.font = '15px system-ui, -apple-system, Segoe UI, Roboto, sans-serif';
+    ctx.fillText('Live values', tx, ty);
+
+    ctx.font = '14px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+    ctx.fillText(`f = ${f.toFixed(0)} Hz`, tx, ty + 24);
+    ctx.fillText(`t = ${tDrive.toFixed(3)} s`, tx, ty + 46);
+    ctx.fillText(`θ(t) = 2π·${(f*tDrive).toFixed(3)}`, tx, ty + 68);
+    ctx.fillText(`sin = ${s.toFixed(3)}`, tx, ty + 90);
+    ctx.fillText(`cos = ${c.toFixed(3)}`, tx, ty + 112);
+    if (hover.active) {
+      ctx.fillStyle = '#333';
+      ctx.font = '13px system-ui, -apple-system, Segoe UI, Roboto, sans-serif';
+      ctx.fillText('(hovering plot)', tx, ty + 136);
+    }
+
+    // ---- Right: plots ----
+    const { top, bot } = plotRects();
+
+    const T = tWindow();
+    ctx.fillStyle = '#111';
+    ctx.font = '15px system-ui, -apple-system, Segoe UI, Roboto, sans-serif';
+    ctx.fillText(`Time axis: 0 to ${(T).toFixed(2)} s (5 cycles)`, right.x + 12, right.y + 28);
+
+    const markerT = hover.active ? hover.t : t;
+    drawPlot(top, 'sin(2π f t)', 'sin', markerT);
+    drawPlot(bot, 'cos(2π f t)', 'cos', markerT);
+
+    // Prominent Frequency/Period below cosine plot
+    ctx.fillStyle = '#111';
+    ctx.font = '16px system-ui, -apple-system, Segoe UI, Roboto, sans-serif';
+    const fpText = `Frequency f = ${f} Hz    Period T = ${(1/f).toFixed(2)} s`;
+    const fpX = bot.x + bot.w/2 - ctx.measureText(fpText).width/2;
+    const fpY = bot.y + bot.h + 78;
+    ctx.fillText(fpText, fpX, fpY);
+  }
+
+  function updateKPIs(){
+    const f = getF();
+    fVal.textContent = String(f);
+    speedVal.textContent = getSpeed().toFixed(2);
+
+    tVal.textContent = t.toFixed(3);
+    fInTheta.textContent = String(f);
+    tInTheta.textContent = t.toFixed(3);
+
+    const th = theta(t);
+    sinVal.textContent = Math.sin(th).toFixed(3);
+    cosVal.textContent = Math.cos(th).toFixed(3);
+  }
+
+  function step(ts){
+    if(!running) return;
+    if(lastTs==null) lastTs=ts;
+
+    t += (ts - lastTs) / 1000 * getSpeed();
+    lastTs = ts;
+
+    const T = tWindow();
+    if(t >= T){
+      t = T;
+      running = false;
+      stopped = true;
+      startBtn.disabled = true;
+      pauseBtn.disabled = true;
+      setStatus('stopped (5 cycles)');
+    }
+
+    draw();
+    updateKPIs();
+    if(running) requestAnimationFrame(step);
+  }
+
+  function play(){
+    if(stopped) return;
+    running = true;
+    lastTs = null;
+    startBtn.disabled = true;
+    pauseBtn.disabled = false;
+    setStatus('running');
+    requestAnimationFrame(step);
+  }
+
+  function pause(){
+    if(!running) return;
+    running = false;
+    startBtn.disabled = false;
+    pauseBtn.disabled = true;
+    setStatus('paused');
+    draw();
+    updateKPIs();
+  }
+
+  function reset(){
+    running = false;
+    stopped = false;
+    lastTs = null;
+    t = 0;
+    hover.active = false;
+
+    startBtn.disabled = false;
+    pauseBtn.disabled = true;
+    setStatus('idle');
+
+    draw();
+    updateKPIs();
+  }
+
+  // Hover over either plot: map x to time in [0, T]
+  function handleHover(e){
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+
+    const { top, bot } = plotRects();
+    const insideTop = (mx >= top.x && mx <= top.x + top.w && my >= top.y && my <= top.y + top.h);
+    const insideBot = (mx >= bot.x && mx <= bot.x + bot.w && my >= bot.y && my <= bot.y + bot.h);
+
+    if (!insideTop && !insideBot) {
+      if (hover.active) {
+        hover.active = false;
+        draw();
+      }
+      return;
+    }
+
+    const plot = insideTop ? top : bot;
+    const u = clamp((mx - plot.x) / plot.w, 0, 1);
+    const T = tWindow();
+
+    hover.active = true;
+    hover.t = u * T;
+    draw();
+  }
+
+  canvas.addEventListener('mousemove', handleHover);
+  canvas.addEventListener('mouseleave', () => {
+    if (hover.active) {
+      hover.active = false;
+      draw();
+    }
+  });
+
+  startBtn.onclick = play;
+  pauseBtn.onclick = pause;
+  resetBtn.onclick = reset;
+
+  fSelect.onchange = () => { reset(); };
+  speedSlider.oninput = () => { speedVal.textContent = getSpeed().toFixed(2); };
+
+  function refreshAll(){
+    resizeCanvasForDPR();
+    draw();
+    updateKPIs();
+  }
+
+  window.addEventListener('resize', refreshAll);
+
+  // initial
+  refreshAll();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>2D DCT Low-Pass Image Reconstruction</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      margin: 0;
+      padding: 16px;
+      background: #fff;
+      color: #111;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 2px 0;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      color: #555;
+      font-size: 13px;
+      margin: 0 0 16px 0;
+      line-height: 1.35;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 12px;
+      background: #fff;
+    }
+
+    .panel-title {
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    canvas {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      border: 1px solid #eee;
+      display: block;
+      max-width: 280px; /* compact display size */
+    }
+
+    .controls {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 12px;
+      background: #fff;
+    }
+
+    .row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .klabel {
+      font-size: 12px;
+      color: #666;
+      margin-top: 2px;
+    }
+
+    .coeffs {
+      font-size: 18px;
+      font-weight: 700;
+      color: #111;
+      margin-top: 6px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .ticks {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #666;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 700px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      canvas {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>2D DCT Low-Pass Reconstruction</h1>
+    <div class="subtitle">
+      Slider keeps the top-left <b>k × k</b> DCT coefficients (same cutoff in both directions).
+    </div>
+
+    <div class="grid">
+      <div class="panel">
+        <div class="panel-title">Original</div>
+        <canvas id="orig" width="256" height="256"></canvas>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Reconstruction (after low-pass filter)</div>
+        <canvas id="recon" width="256" height="256"></canvas>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="row">
+        <div>
+          <div><b>Cutoff (k × k coefficients)</b></div>
+          <div class="klabel" id="klabel">k = 32 (out of 256)</div>
+        </div>
+        <div class="coeffs" id="coeffs">Coefficients kept: 1.56%</div>
+      </div>
+
+      <input type="range" id="slider" min="1" max="256" value="32" />
+      <div class="ticks">
+        <span>1</span><span>64</span><span>128</span><span>256</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const IMAGE_URL =
+      "https://chandak1299.github.io/Teaching/ENGR76_Winter_2026/Visualizations/image_example.jpg";
+
+    const N = 256;
+
+    const origCanvas = document.getElementById("orig");
+    const reconCanvas = document.getElementById("recon");
+    const slider = document.getElementById("slider");
+    const coeffsLabel = document.getElementById("coeffs");
+    const kLabel = document.getElementById("klabel");
+
+    const origCtx = origCanvas.getContext("2d", { willReadFrequently: true });
+    const reconCtx = reconCanvas.getContext("2d", { willReadFrequently: true });
+
+    function idx(r, c) {
+      return r * N + c;
+    }
+
+    // Build orthonormal DCT-II matrix C (NxN)
+    function buildDCTMatrix() {
+      const C = new Float32Array(N * N);
+      const s0 = Math.sqrt(1 / N);
+      const s = Math.sqrt(2 / N);
+      for (let k = 0; k < N; k++) {
+        const alpha = k === 0 ? s0 : s;
+        for (let i = 0; i < N; i++) {
+          C[idx(k, i)] =
+            alpha * Math.cos((Math.PI * (2 * i + 1) * k) / (2 * N));
+        }
+      }
+      return C;
+    }
+
+    function transpose(A) {
+      const T = new Float32Array(N * N);
+      for (let r = 0; r < N; r++)
+        for (let c = 0; c < N; c++)
+          T[idx(c, r)] = A[idx(r, c)];
+      return T;
+    }
+
+    // Multiply two NxN matrices
+    function matMul(A, B) {
+      const out = new Float32Array(N * N);
+      for (let i = 0; i < N; i++) {
+        for (let k = 0; k < N; k++) {
+          const a = A[idx(i, k)];
+          const base = k * N;
+          const outBase = i * N;
+          for (let j = 0; j < N; j++) {
+            out[outBase + j] += a * B[base + j];
+          }
+        }
+      }
+      return out;
+    }
+
+    // 2D DCT using separability: X = C * x * C^T
+    function dct2(x, C, Ct) {
+      return matMul(matMul(C, x), Ct);
+    }
+
+    // Inverse 2D DCT: x = C^T * X * C
+    function idct2(X, C, Ct) {
+      return matMul(matMul(Ct, X), C);
+    }
+
+    function readGray() {
+      const img = origCtx.getImageData(0, 0, N, N).data;
+      const x = new Float32Array(N * N);
+      for (let i = 0; i < N * N; i++) {
+        const j = i * 4;
+        const r = img[j] / 255;
+        const g = img[j + 1] / 255;
+        const b = img[j + 2] / 255;
+        // luminance
+        x[i] = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      }
+      return x;
+    }
+
+    function drawGray(ctx, x) {
+      const img = ctx.createImageData(N, N);
+      for (let i = 0; i < N * N; i++) {
+        const v = Math.max(0, Math.min(255, Math.round(x[i] * 255)));
+        const j = i * 4;
+        img.data[j] = img.data[j + 1] = img.data[j + 2] = v;
+        img.data[j + 3] = 255;
+      }
+      ctx.putImageData(img, 0, 0);
+    }
+
+    const C = buildDCTMatrix();
+    const Ct = transpose(C);
+    let fullDCT = null;
+
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = IMAGE_URL;
+
+    img.onload = () => {
+      origCtx.clearRect(0, 0, N, N);
+      origCtx.drawImage(img, 0, 0, N, N);
+      const x = readGray();
+      fullDCT = dct2(x, C, Ct);
+      update();
+    };
+
+    img.onerror = () => {
+      alert("Failed to load the image (possible CORS issue).");
+    };
+
+    function update() {
+      if (!fullDCT) return;
+
+      const k = Number(slider.value);
+      kLabel.textContent = `k = ${k} (out of ${N})`;
+
+      // Keep only the top-left k×k DCT coefficients
+      const Xm = new Float32Array(N * N);
+      for (let r = 0; r < k; r++) {
+        const rBase = r * N;
+        for (let c = 0; c < k; c++) {
+          Xm[rBase + c] = fullDCT[rBase + c];
+        }
+      }
+
+      const xhat = idct2(Xm, C, Ct);
+      drawGray(reconCtx, xhat);
+
+      const pct = ((k * k) / (N * N) * 100).toFixed(2);
+      coeffsLabel.textContent = `Coefficients kept: ${pct}%`;
+    }
+
+    slider.addEventListener("input", update);
+  </script>
+</body>
+</html>

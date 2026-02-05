@@ -116,8 +116,8 @@
       canvas {
         display: block;
         margin: 0 auto;
-        width: 320px;
-        height: 320px;
+        width: 240px;
+        height: 240px;
       }
 
       .small {
@@ -209,50 +209,44 @@
 
     <script>
       // ---------- Parameters ----------
-      // Default sampling FPS (used by stroboscopic presets)
-      const DEFAULT_FPS = 6;
+      // Single, global sampling FPS for ALL presets
+      const FPS = 6; // change to 24 if you want a smooth-video-rate demo
+
       const SPOKES = 4;
       const SPOKE_SPACING_DEG = 360 / SPOKES; // 90
       const COLORS = ["#ef4444", "#22c55e", "#3b82f6", "#eab308"]; // R,G,B,Y
 
-      // Per-preset FPS: normal runs at higher FPS for smoother motion.
-      function fpsForPreset(key) {
-        return key === "normal" ? 24 : DEFAULT_FPS;
-      }
-
       /**
        * Presets are tuned for a 4-spoke wheel.
-       * Stroboscopic presets are defined at DEFAULT_FPS=6 (human-friendly RPS values),
-       * while the "normal" preset uses a higher FPS for smoother motion.
+       * With FPS=6, the classic wagon-wheel effects occur at human-friendly RPS values.
        */
       const PRESETS = {
         normal: {
           title: "Normal (clockwise)",
-          rps: 0.5,
-          note: "Runs at 24 FPS for a smoother sampled view (per-frame advance is 7.5°).",
+          rps: 0.5, // 30°/frame at 6 FPS
+          note: "Advances 30° per frame: sampled view moves smoothly clockwise.",
         },
         stationary: {
           title: "Stationary (colors switch)",
-          rps: 1.5, // 90°/frame at 6 FPS
-          note: "At 6 FPS, advances exactly 90° per frame (one spoke spacing): geometry repeats, colors cycle.",
+          rps: 1.5, // 90°/frame
+          note: "Advances exactly 90° per frame (one spoke spacing): geometry repeats, colors cycle.",
         },
         stationarySameColors: {
           title: "Stationary (same colors)",
-          rps: 6.0, // 360°/frame at 6 FPS
-          note: "At 6 FPS, advances exactly 360° per frame: every frame is identical (including colors).",
+          rps: 6.0, // 360°/frame
+          note: "Advances exactly 360° per frame: every frame is identical (including colors).",
         },
         reverse: {
           title: "Appears to rotate backward",
-          rps: 1.4, // 84°/frame at 6 FPS
-          note: "At 6 FPS, advances 84° per frame: relative to 90° symmetry, appears to move backward by ~6° per frame.",
+          rps: 1.4, // 84°/frame
+          note: "Advances 84° per frame: relative to 90° symmetry, appears to move backward by ~6° per frame.",
         },
       };
 
       // ---------- DOM ----------
       const $ = (id) => document.getElementById(id);
-      // Headline FPS is fixed to the base stroboscopic rate.
-      $("fpsText").textContent = String(DEFAULT_FPS);
-
+      $("fpsText").textContent = String(FPS);
+      $("fpsPill").textContent = String(FPS);
       $("spacingText").textContent = SPOKE_SPACING_DEG.toFixed(1);
       $("spokesText").textContent = String(SPOKES);
 
@@ -281,16 +275,10 @@
         const h = ctx.canvas.height;
         const cx = w / 2;
         const cy = h / 2;
-        const rOuter = 135;
-        const rHub = 14;
+        const rOuter = 100;
+        const rHub = 10;
 
         ctx.clearRect(0, 0, w, h);
-
-        // subtle background
-        ctx.fillStyle = "rgba(15,23,42,0.03)";
-        ctx.beginPath();
-        ctx.arc(cx, cy, rOuter + 18, 0, Math.PI * 2);
-        ctx.fill();
 
         // rings
         ctx.strokeStyle = "rgba(15,23,42,0.55)";
@@ -302,17 +290,17 @@
         ctx.strokeStyle = "rgba(15,23,42,0.20)";
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.arc(cx, cy, rOuter - 18, 0, Math.PI * 2);
+        ctx.arc(cx, cy, rOuter - 16, 0, Math.PI * 2);
         ctx.stroke();
 
-        // spokes group (rotate)
+        // spokes (rotate)
         ctx.save();
         ctx.translate(cx, cy);
         ctx.rotate(angleRad);
         ctx.translate(-cx, -cy);
 
         ctx.lineCap = "round";
-        ctx.lineWidth = 8;
+        ctx.lineWidth = 7;
         for (let k = 0; k < SPOKES; k++) {
           const theta = (2 * Math.PI * k) / SPOKES;
           const x2 = cx + rOuter * Math.cos(theta);
@@ -320,7 +308,6 @@
           const x1 = cx + (rHub + 6) * Math.cos(theta);
           const y1 = cy + (rHub + 6) * Math.sin(theta);
           ctx.strokeStyle = COLORS[k % COLORS.length];
-          ctx.globalAlpha = 0.95;
           ctx.beginPath();
           ctx.moveTo(x1, y1);
           ctx.lineTo(x2, y2);
@@ -329,29 +316,19 @@
         ctx.restore();
 
         // hub
-        ctx.globalAlpha = 0.9;
         ctx.fillStyle = "rgba(15,23,42,0.9)";
         ctx.beginPath();
         ctx.arc(cx, cy, rHub, 0, Math.PI * 2);
         ctx.fill();
-
-        ctx.globalAlpha = 0.25;
-        ctx.strokeStyle = "rgba(15,23,42,1)";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.arc(cx, cy, rHub + 10, 0, Math.PI * 2);
-        ctx.stroke();
-
-        ctx.globalAlpha = 1.0;
       }
 
       function radToDeg(r) {
         return (r * 180) / Math.PI;
       }
 
-      // ---------- Time model (the FIX) ----------
-      // We compute true and sampled angles from time directly, and sample on an exact grid.
-      // Sampling period depends on selected preset.
+      // ---------- Time model ----------
+      // Exact sampling on a fixed grid: t_sample = floor(t/T) * T
+      const Tms = 1000 / FPS;
       let startTs = null;
 
       const ctxTrue = $("cTrue").getContext("2d");
@@ -359,8 +336,7 @@
 
       function updateDetails() {
         const rps = PRESETS[presetKey].rps;
-        const fps = fpsForPreset(presetKey);
-        const degPerFrame = (360 * rps) / fps;
+        const degPerFrame = (360 * rps) / FPS;
         const k = Math.round(degPerFrame / SPOKE_SPACING_DEG);
         const residual = degPerFrame - k * SPOKE_SPACING_DEG;
 
@@ -369,10 +345,6 @@
         $("dpfText").textContent = degPerFrame.toFixed(2);
         $("aliasText").textContent = residual.toFixed(2);
         $("noteText").textContent = PRESETS[presetKey].note;
-
-        // Keep the headline text fixed (shows the base/strobe FPS).
-        // Only the pill reflects the current preset's sampling FPS.
-        $("fpsPill").textContent = String(fps);
       }
 
       function tick(ts) {
@@ -380,14 +352,12 @@
         const tMs = ts - startTs;
 
         const rps = PRESETS[presetKey].rps;
-        const fps = fpsForPreset(presetKey);
-        const Tms = 1000 / fps;
         const omega = 2 * Math.PI * rps; // rad/s
 
-        // True (continuous) angle
+        // True (continuous)
         const aTrue = ((omega * (tMs / 1000)) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
 
-        // Sampled angle on EXACT sample grid
+        // Sampled on exact grid
         const n = Math.floor(tMs / Tms);
         const tSampleMs = n * Tms;
         const aSample = ((omega * (tSampleMs / 1000)) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
@@ -405,19 +375,10 @@
       renderButtons();
       updateDetails();
 
-      // sanity checks (stroboscopic presets at DEFAULT_FPS)
-      console.assert(
-        Math.abs((360 * PRESETS.stationary.rps) / DEFAULT_FPS - 90) < 1e-9,
-        "Stationary(colors) should be 90°/frame at DEFAULT_FPS"
-      );
-      console.assert(
-        Math.abs((360 * PRESETS.stationarySameColors.rps) / DEFAULT_FPS - 360) < 1e-9,
-        "Stationary(same) should be 360°/frame at DEFAULT_FPS"
-      );
-      console.assert(
-        Math.abs((360 * PRESETS.reverse.rps) / DEFAULT_FPS - 84) < 1e-9,
-        "Reverse should be 84°/frame at DEFAULT_FPS"
-      );
+      // sanity checks
+      console.assert(Math.abs((360 * PRESETS.stationary.rps) / FPS - 90) < 1e-9);
+      console.assert(Math.abs((360 * PRESETS.stationarySameColors.rps) / FPS - 360) < 1e-9);
+      console.assert(Math.abs((360 * PRESETS.reverse.rps) / FPS - 84) < 1e-9);
 
       requestAnimationFrame(tick);
     </script>

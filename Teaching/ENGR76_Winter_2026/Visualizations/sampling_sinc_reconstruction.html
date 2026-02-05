@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Sampling and Sinc Reconstruction</title>
+    <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        margin: 16px;
+      }
+      .controls {
+        display: grid;
+        gap: 12px;
+        max-width: 900px;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 260px 1fr 70px;
+        gap: 12px;
+        align-items: center;
+      }
+      .card {
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 14px;
+        margin-top: 14px;
+      }
+      .plot {
+        width: 100%;
+        height: 280px;
+      }
+      .plots-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin-top: 14px;
+      }
+
+      @media (max-width: 1100px) {
+        .plots-row {
+          grid-template-columns: 1fr;
+        }
+      }
+      .hint {
+        color: #6b7280;
+        font-size: 13px;
+        margin-top: 6px;
+      }
+      label {
+        font-weight: 600;
+      }
+      input[type="range"] {
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Sampling and Sinc Reconstruction</h2>
+
+    <div class="card controls">
+      <div class="row">
+        <label for="f">Sine frequency f (Hz)</label>
+        <input id="f" type="range" min="1" max="10" step="0.5" value="5" />
+        <div><span id="fVal">5</span></div>
+      </div>
+      <div class="row">
+        <label for="fs">Sampling frequency f<sub>s</sub> (Hz)</label>
+        <input id="fs" type="range" min="1" max="25" step="1" value="11" />
+        <div><span id="fsVal">11</span></div>
+      </div>
+      <div class="hint">
+        Signal: x(t) = sin(2π f t), plotted on t ∈ [0,1]. Samples at t = mT<sub>s</sub>, T<sub>s</sub> = 1/f<sub>s</sub>.
+      </div>
+    </div>
+
+    <div class="plots-row">
+      <div class="card">
+        <h3>1) Continuous-time signal with samples</h3>
+        <div id="plot1" class="plot"></div>
+      </div>
+
+      <div class="card">
+        <h3>2) Samples (stem plot)</h3>
+        <div id="plot2" class="plot"></div>
+      </div>
+
+      <div class="card">
+        <h3>3) Sinc reconstruction</h3>
+        <div id="plot3" class="plot"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <strong>Observations:</strong>
+      <ol>
+        <li>
+          The reconstructed signal matches the original signal at the sampling instances for any sampling frequency.
+        </li>
+        <li>
+          Sinc interpolation gives perfect reconstruction if the sampling frequency is at least twice the bandwidth of the signal.
+        </li>
+      </ol>
+    </div>
+
+    <script>
+      // Normalized sinc: sin(pi x)/(pi x)
+      function sinc(x) {
+        if (Math.abs(x) < 1e-10) return 1.0;
+        return Math.sin(Math.PI * x) / (Math.PI * x);
+      }
+
+      const T = 1.0;       // plot interval [0,1]
+      const denseN = 2000; // dense grid
+      const M = 300;       // reconstruction window (large -> ~infinite)
+
+      const tDense = Array.from({ length: denseN }, (_, i) => (i / (denseN - 1)) * T);
+
+      const fSlider = document.getElementById("f");
+      const fsSlider = document.getElementById("fs");
+      const fVal = document.getElementById("fVal");
+      const fsVal = document.getElementById("fsVal");
+
+      function computeSamples(f, fs) {
+        const Ts = 1 / fs;
+        const mMax = Math.ceil(T / Ts);
+        const ts = [];
+        const xs = [];
+        for (let m = 0; m <= mMax; m++) {
+          const t = m * Ts;
+          ts.push(t);
+          xs.push(Math.sin(2 * Math.PI * f * t));
+        }
+        return { Ts, ts, xs };
+      }
+
+      function computeDenseSignal(f) {
+        return tDense.map((t) => Math.sin(2 * Math.PI * f * t));
+      }
+
+      function computeReconstruction(f, Ts) {
+        const xhat = new Array(tDense.length).fill(0);
+        for (let i = 0; i < tDense.length; i++) {
+          const t = tDense[i];
+          let sum = 0;
+          for (let m = -M; m <= M; m++) {
+            const tm = m * Ts;
+            const xm = Math.sin(2 * Math.PI * f * tm);
+            sum += xm * sinc((t - tm) / Ts);
+          }
+          xhat[i] = sum;
+        }
+        return xhat;
+      }
+
+      const baseLayout = (title) => ({
+        title: { text: title, x: 0 },
+        margin: { l: 55, r: 20, t: 40, b: 45 },
+        xaxis: { title: "t (s)", range: [0, 1], zeroline: false },
+        yaxis: { range: [-1.2, 1.2], zeroline: true },
+        showlegend: false,
+      });
+
+      function renderAll() {
+        const f = parseFloat(fSlider.value);
+        const fs = parseFloat(fsSlider.value);
+        fVal.textContent = f.toString();
+        fsVal.textContent = fs.toString();
+
+        const xDense = computeDenseSignal(f);
+        const { Ts, ts, xs } = computeSamples(f, fs);
+        const xHat = computeReconstruction(f, Ts);
+
+        // Plot 1: continuous + samples
+        Plotly.react(
+          "plot1",
+          [
+            { x: tDense, y: xDense, mode: "lines", line: { width: 2 } },
+            { x: ts, y: xs, mode: "markers", marker: { size: 8, color: "red" } },
+          ],
+          baseLayout("x(t) with samples"),
+          { responsive: true }
+        );
+
+        // Plot 2: stem plot
+        const stemX = [];
+        const stemY = [];
+        for (let i = 0; i < ts.length; i++) {
+          stemX.push(ts[i], ts[i], null);
+          stemY.push(0, xs[i], null);
+        }
+        Plotly.react(
+          "plot2",
+          [
+            { x: stemX, y: stemY, mode: "lines", line: { width: 2, color: "red" } },
+            { x: ts, y: xs, mode: "markers", marker: { size: 8, color: "red" } },
+          ],
+          baseLayout("Samples (stem plot)"),
+          { responsive: true }
+        );
+
+        // Plot 3: reconstruction + samples
+        Plotly.react(
+          "plot3",
+          [
+            { x: tDense, y: xHat, mode: "lines", line: { width: 2 } },
+            { x: ts, y: xs, mode: "markers", marker: { size: 8, color: "red" } },
+          ],
+          baseLayout("Sinc reconstruction"),
+          { responsive: true }
+        );
+      }
+
+      fSlider.addEventListener("input", renderAll);
+      fsSlider.addEventListener("input", renderAll);
+
+      renderAll();
+    </script>
+  </body>
+</html>

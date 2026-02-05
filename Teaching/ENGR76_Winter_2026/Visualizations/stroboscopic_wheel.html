@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stroboscopic (wagon-wheel) effect — fixed FPS</title>
+    <style>
+      :root {
+        --bg: #f6f7fb;
+        --card: #ffffff;
+        --card2: #ffffff;
+        --text: #0f172a;
+        --muted: rgba(15, 23, 42, 0.65);
+        --border: rgba(15, 23, 42, 0.15);
+        --btn: rgba(15, 23, 42, 0.05);
+        --btnHover: rgba(15, 23, 42, 0.10);
+        --btnActive: rgba(15, 23, 42, 0.18);
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji",
+          "Segoe UI Emoji";
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      .wrap {
+        max-width: 980px;
+        margin: 32px auto;
+        padding: 0 16px 40px;
+      }
+
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+
+      .card {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 35%), var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+      }
+
+      .card .content { padding: 16px; }
+
+      h1 {
+        font-size: 18px;
+        margin: 0 0 8px;
+        letter-spacing: 0.2px;
+      }
+
+      .muted { color: var(--muted); }
+
+      .btnrow {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      button {
+        border: 1px solid var(--border);
+        background: var(--btn);
+        color: var(--text);
+        padding: 10px 12px;
+        border-radius: 999px;
+        cursor: pointer;
+        font-weight: 600;
+        letter-spacing: 0.1px;
+      }
+      button:hover { background: var(--btnHover); }
+      button.active { background: var(--btnActive); }
+
+      .twocol {
+        display: grid;
+        gap: 16px;
+      }
+      @media (min-width: 860px) {
+        .twocol { grid-template-columns: 1fr 1fr; }
+      }
+
+      .headrow {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+
+      .title {
+        font-weight: 800;
+        margin: 0;
+        font-size: 14px;
+      }
+
+      .subtitle {
+        margin: 4px 0 0;
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.35;
+      }
+
+      .pill {
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        font-weight: 800;
+        font-size: 12px;
+        white-space: nowrap;
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      canvas {
+        display: block;
+        margin: 0 auto;
+        width: 320px;
+        height: 320px;
+      }
+
+      .small {
+        margin-top: 10px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .kv {
+        display: grid;
+        gap: 6px;
+        font-size: 14px;
+      }
+      .kv b { color: var(--text); }
+
+      .note {
+        margin-top: 10px;
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.35;
+      }
+
+      code.inline {
+        padding: 2px 6px;
+        border-radius: 6px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="grid">
+        <div class="card">
+          <div class="content">
+            <h1>Stroboscopic (wagon-wheel) effect — fixed FPS</h1>
+            <div class="muted">
+              Observation frame rate depends on the selected preset. Current sampling rate: <b id="fpsText">6</b> FPS.
+              The sampled view is computed on an <i>exact</i> sampling grid:
+              <code class="inline">t_sample = floor(t/T)·T</code>.
+            </div>
+            <div class="btnrow" id="buttons"></div>
+          </div>
+        </div>
+
+        <div class="twocol">
+          <div class="card">
+            <div class="content">
+              <div class="headrow">
+                <div>
+                  <div class="title">True motion (continuous)</div>
+                  <div class="subtitle">Continuous time rotation (independent of sampling)</div>
+                </div>
+              </div>
+              <canvas id="cTrue" width="320" height="320"></canvas>
+              <div class="small">Angle shown: <span id="angTrue">0.0</span>°</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="content">
+              <div class="headrow">
+                <div>
+                  <div class="title">What you see (sampled)</div>
+                  <div class="subtitle">Held between frames; aliasing appears as RPS changes</div>
+                </div>
+                <div class="pill">Sampling at <span id="fpsPill">6</span> FPS</div>
+              </div>
+              <canvas id="cSample" width="320" height="320"></canvas>
+              <div class="small">Angle shown: <span id="angSample">0.0</span>°</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="content">
+            <div class="title" style="font-size: 14px;">Selected preset details</div>
+            <div class="kv" style="margin-top: 10px;">
+              <div><b>Wheel speed:</b> <span id="rpsText">0.50</span> RPS (≈ <span id="rpmText">30</span> RPM)</div>
+              <div><b>Per-frame advance:</b> <span id="dpfText">30.00</span>°</div>
+              <div><b>Spoke spacing:</b> <span id="spacingText">90.0</span>° (<span id="spokesText">4</span> spokes)</div>
+              <div><b>Apparent motion (aliased residual):</b> <span id="aliasText">30.00</span>°/frame</div>
+            </div>
+            <div class="note" id="noteText"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ---------- Parameters ----------
+      // Default sampling FPS (used by stroboscopic presets)
+      const DEFAULT_FPS = 6;
+      const SPOKES = 4;
+      const SPOKE_SPACING_DEG = 360 / SPOKES; // 90
+      const COLORS = ["#ef4444", "#22c55e", "#3b82f6", "#eab308"]; // R,G,B,Y
+
+      // Per-preset FPS: normal runs at higher FPS for smoother motion.
+      function fpsForPreset(key) {
+        return key === "normal" ? 24 : DEFAULT_FPS;
+      }
+
+      /**
+       * Presets are tuned for a 4-spoke wheel.
+       * Stroboscopic presets are defined at DEFAULT_FPS=6 (human-friendly RPS values),
+       * while the "normal" preset uses a higher FPS for smoother motion.
+       */
+      const PRESETS = {
+        normal: {
+          title: "Normal (clockwise)",
+          rps: 0.5,
+          note: "Runs at 24 FPS for a smoother sampled view (per-frame advance is 7.5°).",
+        },
+        stationary: {
+          title: "Stationary (colors switch)",
+          rps: 1.5, // 90°/frame at 6 FPS
+          note: "At 6 FPS, advances exactly 90° per frame (one spoke spacing): geometry repeats, colors cycle.",
+        },
+        stationarySameColors: {
+          title: "Stationary (same colors)",
+          rps: 6.0, // 360°/frame at 6 FPS
+          note: "At 6 FPS, advances exactly 360° per frame: every frame is identical (including colors).",
+        },
+        reverse: {
+          title: "Appears to rotate backward",
+          rps: 1.4, // 84°/frame at 6 FPS
+          note: "At 6 FPS, advances 84° per frame: relative to 90° symmetry, appears to move backward by ~6° per frame.",
+        },
+      };
+
+      // ---------- DOM ----------
+      const $ = (id) => document.getElementById(id);
+      // Headline FPS is fixed to the base stroboscopic rate.
+      $("fpsText").textContent = String(DEFAULT_FPS);
+
+      $("spacingText").textContent = SPOKE_SPACING_DEG.toFixed(1);
+      $("spokesText").textContent = String(SPOKES);
+
+      const buttonsRoot = $("buttons");
+      let presetKey = "normal";
+
+      function renderButtons() {
+        buttonsRoot.innerHTML = "";
+        Object.keys(PRESETS).forEach((k) => {
+          const btn = document.createElement("button");
+          btn.textContent = PRESETS[k].title;
+          btn.className = k === presetKey ? "active" : "";
+          btn.addEventListener("click", () => {
+            presetKey = k;
+            startTs = null; // reset time origin so sampling locks immediately
+            renderButtons();
+            updateDetails();
+          });
+          buttonsRoot.appendChild(btn);
+        });
+      }
+
+      // ---------- Drawing ----------
+      function drawWheel(ctx, angleRad) {
+        const w = ctx.canvas.width;
+        const h = ctx.canvas.height;
+        const cx = w / 2;
+        const cy = h / 2;
+        const rOuter = 135;
+        const rHub = 14;
+
+        ctx.clearRect(0, 0, w, h);
+
+        // subtle background
+        ctx.fillStyle = "rgba(15,23,42,0.03)";
+        ctx.beginPath();
+        ctx.arc(cx, cy, rOuter + 18, 0, Math.PI * 2);
+        ctx.fill();
+
+        // rings
+        ctx.strokeStyle = "rgba(15,23,42,0.55)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(cx, cy, rOuter, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.strokeStyle = "rgba(15,23,42,0.20)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(cx, cy, rOuter - 18, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // spokes group (rotate)
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(angleRad);
+        ctx.translate(-cx, -cy);
+
+        ctx.lineCap = "round";
+        ctx.lineWidth = 8;
+        for (let k = 0; k < SPOKES; k++) {
+          const theta = (2 * Math.PI * k) / SPOKES;
+          const x2 = cx + rOuter * Math.cos(theta);
+          const y2 = cy + rOuter * Math.sin(theta);
+          const x1 = cx + (rHub + 6) * Math.cos(theta);
+          const y1 = cy + (rHub + 6) * Math.sin(theta);
+          ctx.strokeStyle = COLORS[k % COLORS.length];
+          ctx.globalAlpha = 0.95;
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
+        }
+        ctx.restore();
+
+        // hub
+        ctx.globalAlpha = 0.9;
+        ctx.fillStyle = "rgba(15,23,42,0.9)";
+        ctx.beginPath();
+        ctx.arc(cx, cy, rHub, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.globalAlpha = 0.25;
+        ctx.strokeStyle = "rgba(15,23,42,1)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(cx, cy, rHub + 10, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.globalAlpha = 1.0;
+      }
+
+      function radToDeg(r) {
+        return (r * 180) / Math.PI;
+      }
+
+      // ---------- Time model (the FIX) ----------
+      // We compute true and sampled angles from time directly, and sample on an exact grid.
+      // Sampling period depends on selected preset.
+      let startTs = null;
+
+      const ctxTrue = $("cTrue").getContext("2d");
+      const ctxSample = $("cSample").getContext("2d");
+
+      function updateDetails() {
+        const rps = PRESETS[presetKey].rps;
+        const fps = fpsForPreset(presetKey);
+        const degPerFrame = (360 * rps) / fps;
+        const k = Math.round(degPerFrame / SPOKE_SPACING_DEG);
+        const residual = degPerFrame - k * SPOKE_SPACING_DEG;
+
+        $("rpsText").textContent = rps.toFixed(2);
+        $("rpmText").textContent = String(Math.round(rps * 60));
+        $("dpfText").textContent = degPerFrame.toFixed(2);
+        $("aliasText").textContent = residual.toFixed(2);
+        $("noteText").textContent = PRESETS[presetKey].note;
+
+        // Keep the headline text fixed (shows the base/strobe FPS).
+        // Only the pill reflects the current preset's sampling FPS.
+        $("fpsPill").textContent = String(fps);
+      }
+
+      function tick(ts) {
+        if (startTs == null) startTs = ts;
+        const tMs = ts - startTs;
+
+        const rps = PRESETS[presetKey].rps;
+        const fps = fpsForPreset(presetKey);
+        const Tms = 1000 / fps;
+        const omega = 2 * Math.PI * rps; // rad/s
+
+        // True (continuous) angle
+        const aTrue = ((omega * (tMs / 1000)) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+
+        // Sampled angle on EXACT sample grid
+        const n = Math.floor(tMs / Tms);
+        const tSampleMs = n * Tms;
+        const aSample = ((omega * (tSampleMs / 1000)) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+
+        drawWheel(ctxTrue, aTrue);
+        drawWheel(ctxSample, aSample);
+
+        $("angTrue").textContent = radToDeg(aTrue).toFixed(1);
+        $("angSample").textContent = radToDeg(aSample).toFixed(1);
+
+        requestAnimationFrame(tick);
+      }
+
+      // ---------- Init ----------
+      renderButtons();
+      updateDetails();
+
+      // sanity checks (stroboscopic presets at DEFAULT_FPS)
+      console.assert(
+        Math.abs((360 * PRESETS.stationary.rps) / DEFAULT_FPS - 90) < 1e-9,
+        "Stationary(colors) should be 90°/frame at DEFAULT_FPS"
+      );
+      console.assert(
+        Math.abs((360 * PRESETS.stationarySameColors.rps) / DEFAULT_FPS - 360) < 1e-9,
+        "Stationary(same) should be 360°/frame at DEFAULT_FPS"
+      );
+      console.assert(
+        Math.abs((360 * PRESETS.reverse.rps) / DEFAULT_FPS - 84) < 1e-9,
+        "Reverse should be 84°/frame at DEFAULT_FPS"
+      );
+
+      requestAnimationFrame(tick);
+    </script>
+  </body>
+</html>

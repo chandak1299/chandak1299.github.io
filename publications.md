@@ -19,15 +19,15 @@ _**Google Scholar page [HERE](https://scholar.google.com/citations?user=czi8jdYA
 <a id="multi-agent-control"></a>
 
 ### Multi-Agent Control
+- **Learning to Control Unknown Strongly Monotone Games**  
+S. Chandak, I. Bistritz and N. Bambos  
+_IEEE Transactions on Control of Network Systems (TCNS), to appear_  
+[[arXiv](https://arxiv.org/abs/2407.00575)] [[slides - EPFL Seminar](https://chandak1299.github.io/Slides/Talk_Strongly_Monotone_EPFL.pdf)]
+
 - **Choose Your Battles: Distributed Learning Over Multiple Tug of War Games**  
 S. Chandak, I. Bistritz and N. Bambos  
 Submitted to _IEEE Transactions on Automatic Control (TAC)_  
 [[arXiv](https://arxiv.org/abs/2509.20147)]
-
-- **Learning to Control Unknown Strongly Monotone Games**  
-S. Chandak, I. Bistritz and N. Bambos  
-Submitted to _IEEE Transactions on Control of Network Systems (TCNS)_  
-[[arXiv](https://arxiv.org/abs/2407.00575)]
 
 - **Tug of Peace: Distributed Learning for Quality of Service Guarantees**  
 S. Chandak, I. Bistritz and N. Bambos  
@@ -69,6 +69,11 @@ Submitted to _SIAM Journal on Control and Optimization_
 <a id="rl-and-sa"></a>
 
 ### Reinforcement Learning and Stochastic Approximation
+- **Regret and Sample Complexity of Online Q-Learning via Concentration of Stochastic Approximation with Time-Inhomogeneous Markov Chains**  
+R. Singh, S. Chandak, E. Moulines, V. S. Borkar and N. Bambos  
+Submitted to _International Conference on Machine Learning (ICML), 2026_  
+[[arXiv](https://arxiv.org/abs/2602.16274)]
+
 - **A Concentration Bound for TD(0) with Function Approximation**  
 S. Chandak and V. S. Borkar  
 _Stochastic Systems, to appear_  

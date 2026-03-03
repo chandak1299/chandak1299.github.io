@@ -123,6 +123,10 @@ _IEEE Communications Letter, May 2021_
 
 ### Invited Talks
 
+- **Learning to Control Unknown Strongly Monotone Games**  
+_Seminar at Automatic Control Lab, EPFL_, March 2026  
+[[slides](https://chandak1299.github.io/Slides/Talk_Strongly_Monotone_EPFL.pdf)]
+
 - **O(1/k) Finite-Time Bound for Non-Linear Two-Time-Scale Stochastic Approximation**  
 _INFORMS Annual Meeting_, October 2025  
 [[slides](https://chandak1299.github.io/Slides/INFORMS_Annual_Meeting_Talk.pdf)]  

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Convolutional FSM Simulator</title>
+  <!-- React, ReactDOM, and Babel from CDN -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 1rem; }
+    #root { max-width: 960px; margin: auto; }
+    .container { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-start; }
+    .card { border: 1px solid #ccc; border-radius: 0.5rem; padding: 1rem; flex: 1 1 280px; }
+    .svg-wrapper { flex: 1 1 420px; }
+    .badge { display: inline-block; padding: 0.2rem 0.5rem; border: 1px solid #888; border-radius: 0.25rem; margin-right: 0.5rem; }
+    .button { padding: 0.4rem 0.8rem; margin: 0.2rem; }
+    input { padding: 0.4rem; width: 150px; }
+    .font-mono { font-family: monospace; }
+    svg { width: 360px; height: 275px; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+// same component code with simplified UI wrappers
+const STATES = ["00", "01", "10", "11"];
+
+function xor(a, b) {
+  return a ^ b;
+}
+
+function toBit(x) {
+  return x === "1" ? 1 : 0;
+}
+
+function transition(prev, input) {
+  const s1 = toBit(prev[0]);
+  const s0 = toBit(prev[1]);
+  const p1 = xor(xor(input, s1), s0);
+  const p2 = xor(input, s0);
+  const out = `${p1}${p2}`;
+  const next = `${input}${s1}`;
+  return { out, next };
+}
+
+function sanitizeBits(raw) {
+  return (raw || "").replace(/\s+/g, "").replace(/[^01]/g, "");
+}
+
+function computeAllTransitions() {
+  const rows = [];
+  for (const from of STATES) {
+    for (const u of [0, 1]) {
+      const { out, next } = transition(from, u);
+      rows.push({ from, input: u, out, to: next });
+    }
+  }
+  return rows;
+}
+
+const NODE_POS = {
+  "00": { x: 90, y: 160 },
+  "01": { x: 210, y: 50 },
+  "11": { x: 330, y: 160 },
+  "10": { x: 210, y: 270 },
+};
+
+function edgeKey(from, input) {
+  return `${from}-${input}`;
+}
+
+function ConvolutionalFSM() {
+  const [bits, setBits] = React.useState("1011");
+  const [cursor, setCursor] = React.useState(0);
+  const [state, setState] = React.useState("00");
+  const [history, setHistory] = React.useState([]);
+  const cleaned = React.useMemo(() => sanitizeBits(bits), [bits]);
+  const withTermination = React.useMemo(() => cleaned + "00", [cleaned]);
+  const transitionsTable = React.useMemo(() => computeAllTransitions(), []);
+
+  React.useEffect(() => {
+    reset();
+  }, [cleaned]);
+
+  const currentBit = cursor < withTermination.length ? (withTermination[cursor] === "1" ? 1 : 0) : null;
+  const activeEdge = React.useMemo(() => {
+    if (currentBit === null) return null;
+    return edgeKey(state, currentBit);
+  }, [state, currentBit]);
+
+  const derived = React.useMemo(() => {
+    if (currentBit === null) return null;
+    const { out, next } = transition(state, currentBit);
+    return { out, next };
+  }, [state, currentBit]);
+
+  function reset() {
+    setCursor(0);
+    setState("00");
+    setHistory([]);
+  }
+
+  function stepNext() {
+    if (cursor >= withTermination.length) return;
+    const u = withTermination[cursor] === "1" ? 1 : 0;
+    const prev = state;
+    const { out, next } = transition(prev, u);
+    const info = { step: cursor + 1, input: u, prevState: prev, out, nextState: next };
+    setHistory(h => [...h, info]);
+    setState(next);
+    setCursor(c => c + 1);
+  }
+
+  function stepBack() {
+    setHistory(h => {
+      if (h.length === 0) return h;
+      const newH = h.slice(0, -1);
+      const lastState = newH.length === 0 ? "00" : newH[newH.length - 1].nextState;
+      setState(lastState);
+      return newH;
+    });
+    setCursor(c => Math.max(0, c - 1));
+  }
+
+  const encodedSoFar = history.map(h => h.out).join("");
+
+  // For FSM diagram: show transition that just happened (from history), not next transition
+  const diagramActiveState = history.length > 0 ? history[history.length - 1].prevState : null;
+  const diagramNextState = history.length > 0 ? history[history.length - 1].nextState : null;
+  const diagramActiveEdge = history.length > 0 ? edgeKey(history[history.length - 1].prevState, history[history.length - 1].input) : null;
+
+  return (
+    <div className="container">
+      <div className="card">
+        <h2>Convolutional Code: FSM Simulator</h2>
+        <div>
+          <label>Input bit sequence </label>
+          <input value={bits} onChange={e => setBits(e.target.value)} placeholder="e.g., 10110" />
+        </div>
+        <div>
+          <button className="button" onClick={reset}>Reset</button>
+          <button className="button" onClick={stepBack} disabled={history.length === 0}>Back</button>
+          <button className="button" onClick={stepNext} disabled={cursor >= withTermination.length}>Next</button>
+        </div>
+        <div>
+          <span className="badge">Step: {cursor}/{withTermination.length}</span>
+          {currentBit !== null ? <span className="badge">Next input: {currentBit}</span> : <span className="badge">End of input</span>}
+        </div>
+      </div>
+      <div className="svg-wrapper">
+        <FSMDiagram activeState={diagramActiveState} activeEdge={diagramActiveEdge} nextState={diagramNextState} />
+      </div>
+      <div className="card">
+        <h3>Step-by-step Trace</h3>
+        <div>
+          <div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', fontWeight: 'bold', marginBottom: '0.5rem', textAlign: 'center' }}>
+              <div>Step</div><div>Current State</div><div>Input</div><div>Output</div><div>Next State</div>
+            </div>
+            {history.length === 0 ? <div>No steps yet.</div> :
+              history.map(h => (
+                <div key={h.step} style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', textAlign: 'center' }}>
+                  <div>{h.step}</div>
+                  <div className="font-mono" style={{ backgroundColor: '#c8e6f5', padding: '0.2rem' }}>{h.prevState}</div>
+                  <div className="font-mono">{h.input}</div>
+                  <div className="font-mono">{h.out}</div>
+                  <div className="font-mono" style={{ backgroundColor: '#ffcccc', padding: '0.2rem' }}>{h.nextState}</div>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+        <div style={{ marginTop: '1.5rem', fontSize: '1.2rem', fontWeight: 'bold' }}>
+          Encoded: <span className="font-mono">{encodedSoFar || "(empty)"}</span>
+        </div>
+      </div>
+
+    </div>
+  );
+}
+
+function FSMDiagram({ activeState, activeEdge, nextState }) {
+  const edges = React.useMemo(() => {
+    const e = [];
+    for (const from of STATES) {
+      for (const u of [0, 1]) {
+        const { out, next } = transition(from, u);
+        e.push({ from, to: next, input: u, label: `${u}/${out}` });
+      }
+    }
+    return e;
+  }, []);
+
+  return (
+  <svg viewBox="0 0 420 320">
+    <defs>
+      <marker
+        id="arrow"
+        viewBox="0 0 10 10"
+        refX="9"
+        refY="5"
+        markerWidth="7"
+        markerHeight="7"
+        orient="auto-start-reverse"
+      >
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
+      </marker>
+    </defs>
+
+    {edges.map((ed, idx) => {
+      const a = NODE_POS[ed.from];
+      const b = NODE_POS[ed.to];
+      const isLoop = ed.from === ed.to;
+      const key = edgeKey(ed.from, ed.input);
+      const isActive = activeEdge === key;
+
+      // Geometry
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const len = Math.max(1, Math.hypot(dx, dy));
+      const ux = dx / len;
+      const uy = dy / len;
+
+      // Pull endpoints away from node centers (node radius ≈ 30)
+      const r = 30;
+      const x1 = a.x + ux * r;
+      const y1 = a.y + uy * r;
+      const x2 = b.x - ux * r;
+      const y2 = b.y - uy * r;
+
+      // Curvature: separate 0-edges and 1-edges consistently.
+      // For bidirectional pairs (01↔10), curve based on direction not input:
+      // 01→10 curves RIGHT, 10→01 curves LEFT
+      const isInnerVertical =
+        (ed.from === "01" && ed.to === "10") || (ed.from === "10" && ed.to === "01");
+
+      let bow, curvature;
+      if (isInnerVertical) {
+        bow = 0.60;
+        // Combine direction and input: 01→10 and 10→01 use opposite inputs
+        // 01→10: input 0 → negative, input 1 → positive
+        // 10→01: input 0 → positive, input 1 → negative
+        curvature = (ed.from === "01" ? (ed.input === 0 ? -1 : 1) : (ed.input === 0 ? 1 : -1)) * bow;
+      } else {
+        bow = 0.35;
+        // For edges leaving 01 (01→00) and entering 01 (11→01), invert curvature
+        const invertCurve = (ed.to === "00" && ed.from === "01") || (ed.to === "01" && ed.from === "11");
+        const sign = invertCurve ? (ed.input === 0 ? 1 : -1) : (ed.input === 0 ? -1 : 1);
+        curvature = sign * bow;
+      }
+
+      // Quadratic Bezier control point
+      const mx = (x1 + x2) / 2;
+      const my = (y1 + y2) / 2;
+      const nx = -uy;
+      const ny = ux;
+      const cx = mx + nx * 120 * curvature;
+      const cy = my + ny * 120 * curvature;
+
+      // Paths
+      const path = isLoop
+        ? (ed.from === "00"
+            // left-side loop for 00 (bigger arc)
+            ? `M ${a.x - 20} ${a.y - 20}
+               C ${a.x - 100} ${a.y - 20}, ${a.x - 100} ${a.y}, ${a.x - 20} ${a.y + 20}`
+            // right-side loop for 11 (bigger arc)
+            : `M ${a.x + 20} ${a.y - 20}
+               C ${a.x + 100} ${a.y - 20}, ${a.x + 100} ${a.y}, ${a.x + 20} ${a.y + 20}`)
+        : `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`;
+
+      // Label position: control point works well for curved edges
+      // For inner vertical (01↔10), use a point closer to the arc
+      let lx, ly;
+      if (isInnerVertical) {
+        // Move label closer to the arc for vertical edges
+        lx = mx + nx * 40 * curvature;
+        ly = my + ny * 40 * curvature;
+      } else {
+        lx = isLoop ? (ed.from === "00" ? a.x - 75 : a.x + 75) : cx;
+        ly = isLoop ? a.y - 20 : cy;
+      }
+
+      return (
+        <g key={`${key}-${idx}`} opacity={isActive ? 1 : 0.75}>
+          <path
+            d={path}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={isActive ? 3 : 2}
+            strokeDasharray={isActive ? "0" : "5,5"}
+            markerEnd="url(#arrow)"
+          />
+          <rect x={lx - 20} y={ly - 13} width={40} height={22} rx={10} fill="white" />
+          <text x={lx} y={ly + 4} textAnchor="middle" fontSize="12" className="font-mono">
+            {ed.label}
+          </text>
+        </g>
+      );
+    })}
+
+    {STATES.map((s) => {
+      const p = NODE_POS[s];
+      const isActive = s === activeState;
+      const isNext = s === nextState;
+      let fillColor;
+      if (isActive) {
+        fillColor = "#a8d0ec";
+      } else if (isNext) {
+        fillColor = "#ffb3b3";
+      } else {
+        fillColor = "#eee";
+      }
+      return (
+        <g key={s}>
+          <circle
+            cx={p.x}
+            cy={p.y}
+            r={30}
+            fill={fillColor}
+            stroke="#000"
+            strokeWidth={2}
+          />
+          <text x={p.x} y={p.y + 5} textAnchor="middle" fontSize="16" className="font-mono">
+            {s}
+          </text>
+        </g>
+      );
+    })}
+
+    <text x="40" y="230" fontSize="12" fill="#888">Initial State</text>
+    <path d="M 70 225 L 95 190" stroke="currentColor" strokeWidth={2} markerEnd="url(#arrow)" />
+  </svg>
+);
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<ConvolutionalFSM />);
+  </script>
+</body>
+</html>

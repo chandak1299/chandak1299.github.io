@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Viterbi Decoding</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 24px;
+    }
+    h1 {
+      margin-top: 0;
+      margin-bottom: 4px;
+    }
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    input {
+      padding: 6px 8px;
+      font-size: 14px;
+      width: 220px;
+    }
+    button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+    }
+    .next { background: #2563eb; }
+    .back { background: #475569; }
+    .reset { background: #6b7280; }
+    svg {
+      border: 1px solid #ccc;
+      margin-left: 24px;
+      margin-bottom: 8px;
+      display: block;
+      background: white;
+    }
+    .small {
+      color: #444;
+      margin-top: 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Viterbi Decoding</h1>
+
+  <div class="controls">
+    <label>
+      Received sequence
+      <input id="seqInput" placeholder="e.g. 0110011010" />
+    </label>
+    <button class="next" id="nextBtn">Next</button>
+    <button class="back" id="backBtn">Back</button>
+    <button class="reset" id="resetBtn">Reset</button>
+  </div>
+
+  <svg id="topSvg"></svg>
+  <svg id="bottomSvg"></svg>
+
+  <div class="small" id="stepText"></div>
+
+  <script>
+    const states = ["00", "01", "10", "11"];
+    const transitions = {
+      "00": [
+        { input: 0, next: "00", out: "00" },
+        { input: 1, next: "10", out: "11" }
+      ],
+      "01": [
+        { input: 0, next: "00", out: "11" },
+        { input: 1, next: "10", out: "00" }
+      ],
+      "10": [
+        { input: 0, next: "01", out: "10" },
+        { input: 1, next: "11", out: "01" }
+      ],
+      "11": [
+        { input: 0, next: "01", out: "01" },
+        { input: 1, next: "11", out: "10" }
+      ]
+    };
+
+    const yPos = { "00": 34, "01": 102, "10": 170, "11": 238 };
+    const xStart = 90;
+    const xStep = 160;
+
+    const seqInput = document.getElementById("seqInput");
+    const nextBtn = document.getElementById("nextBtn");
+    const backBtn = document.getElementById("backBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const topSvg = document.getElementById("topSvg");
+    const bottomSvg = document.getElementById("bottomSvg");
+    const stepText = document.getElementById("stepText");
+
+    let actionStep = 0;
+
+    function hamming(a, b) {
+      let d = 0;
+      for (let i = 0; i < a.length; i++) {
+        if (a[i] !== b[i]) d++;
+      }
+      return d;
+    }
+
+    function labelPoint(x1, y1, x2, y2, t = 0.22, offset = 8) {
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      return {
+        x: x1 + t * dx,
+        y: y1 + t * dy + offset
+      };
+    }
+
+    function svgEl(name, attrs = {}) {
+      const el = document.createElementNS("http://www.w3.org/2000/svg", name);
+      for (const [k, v] of Object.entries(attrs)) {
+        el.setAttribute(k, v);
+      }
+      return el;
+    }
+
+    function cleanSeq(raw) {
+      return raw.replace(/[^01]/g, "");
+    }
+
+    function allowedStatesAt(j, steps) {
+      if (j === steps) return new Set(["00"]);
+      if (j === steps - 1) return new Set(["00", "01"]);
+      return null;
+    }
+
+    function computeData(seq, visibleStep) {
+      const steps = Math.floor(seq.length / 2);
+      const reachable = [];
+      reachable[0] = new Set(["00"]);
+
+      const metrics = { 0: { "00": 0 } };
+      const survivorPrev = {};
+
+      for (let j = 1; j <= steps; j++) {
+        reachable[j] = new Set();
+        metrics[j] = {};
+        survivorPrev[j] = {};
+        const allowed = allowedStatesAt(j, steps);
+
+        reachable[j - 1].forEach((s) => {
+          transitions[s].forEach((t) => {
+            if (allowed && !allowed.has(t.next)) return;
+            reachable[j].add(t.next);
+
+            if (j <= visibleStep) {
+              const pair = seq.slice((j - 1) * 2, (j - 1) * 2 + 2);
+              const d = hamming(pair, t.out);
+              const prevMetric = metrics[j - 1][s];
+              if (prevMetric === undefined) return;
+              const candidate = prevMetric + d;
+
+              if (
+                metrics[j][t.next] === undefined ||
+                candidate < metrics[j][t.next]
+              ) {
+                metrics[j][t.next] = candidate;
+                survivorPrev[j][t.next] = s;
+              }
+            }
+          });
+        });
+      }
+
+      const nodes = [];
+      for (let j = 0; j <= steps; j++) {
+        const allowed = allowedStatesAt(j, steps);
+        states.forEach((s) => {
+          if (allowed && !allowed.has(s)) return;
+          if (j <= visibleStep && !reachable[j].has(s)) return;
+          nodes.push({ state: s, x: xStart + j * xStep, y: yPos[s], j });
+        });
+      }
+
+      const edges = [];
+      for (let j = 0; j < steps; j++) {
+        const pair = seq.slice(j * 2, j * 2 + 2);
+        states.forEach((s) => {
+          if (!reachable[j].has(s)) return;
+          transitions[s].forEach((t) => {
+            if (!reachable[j + 1] || !reachable[j + 1].has(t.next)) return;
+
+            const fromX = xStart + j * xStep;
+            const toX = xStart + (j + 1) * xStep;
+            const fromY = yPos[s];
+            const toY = yPos[t.next];
+
+            let dist = null;
+            let active = false;
+            if (j < visibleStep) {
+              dist = hamming(pair, t.out);
+              active = true;
+            }
+
+            edges.push({ fromX, fromY, toX, toY, dist, active, from: s, to: t.next, j });
+          });
+        });
+      }
+
+      const survivorEdges = [];
+      const survivorNodeSet = new Set();
+      const finalPathEdges = new Set();
+
+      states.forEach((finalState) => {
+        if (!metrics[visibleStep] || metrics[visibleStep][finalState] === undefined) return;
+
+        let current = finalState;
+        for (let j = visibleStep; j > 0; j--) {
+          const prev = survivorPrev[j]?.[current];
+          if (prev === undefined) break;
+
+          survivorEdges.push({ from: prev, to: current, j });
+          survivorNodeSet.add(`${current}-${j}`);
+          survivorNodeSet.add(`${prev}-${j - 1}`);
+
+          if (visibleStep === steps && finalState === "00") {
+            finalPathEdges.add(`${prev}-${current}-${j}`);
+          }
+          current = prev;
+        }
+      });
+
+      let decodedBits = "";
+      let decodedInfo = "";
+      if (visibleStep === steps && metrics[visibleStep] && metrics[visibleStep]["00"] !== undefined) {
+        let current = "00";
+        const inputs = [];
+        const outputs = [];
+
+        for (let j = visibleStep; j > 0; j--) {
+          const prev = survivorPrev[j]?.[current];
+          if (prev === undefined) break;
+          const trans = transitions[prev].find((t) => t.next === current);
+          if (!trans) break;
+          inputs.unshift(String(trans.input));
+          outputs.unshift(trans.out);
+          current = prev;
+        }
+
+        decodedBits = outputs.join("");
+        decodedInfo = inputs.slice(0, Math.max(0, inputs.length - 2)).join("");
+      }
+
+      return {
+        steps,
+        nodes,
+        edges,
+        metrics,
+        survivorEdges,
+        survivorNodeSet,
+        finalPathEdges,
+        decodedBits,
+        decodedInfo
+      };
+    }
+
+    function render() {
+      const seq = cleanSeq(seqInput.value);
+      if (seq !== seqInput.value) seqInput.value = seq;
+
+      const steps = Math.floor(seq.length / 2);
+      const topStep = Math.min(Math.ceil(actionStep / 2), steps);
+      const bottomStep = Math.min(Math.floor(actionStep / 2), steps);
+
+      const topData = computeData(seq, topStep);
+      const bottomData = computeData(seq, bottomStep);
+
+      const width = xStart + xStep * steps + 520;
+      const topHeight = 275;
+      const bottomHeight = 300;
+
+      topSvg.setAttribute("width", width);
+      topSvg.setAttribute("height", topHeight);
+      bottomSvg.setAttribute("width", width);
+      bottomSvg.setAttribute("height", bottomHeight);
+
+      topSvg.innerHTML = "";
+      bottomSvg.innerHTML = "";
+
+      for (let j = 0; j < steps; j++) {
+        const pair = seq.slice(j * 2, j * 2 + 2);
+        const text = svgEl("text", {
+          x: xStart + j * xStep + xStep / 2,
+          y: 20,
+          fill: "red",
+          "font-size": 16,
+          "text-anchor": "middle"
+        });
+        text.textContent = pair;
+        topSvg.appendChild(text);
+      }
+
+      topData.edges.forEach((e) => {
+        topSvg.appendChild(svgEl("line", {
+          x1: e.fromX,
+          y1: e.fromY,
+          x2: e.toX,
+          y2: e.toY,
+          stroke: e.active ? "black" : "#ccc",
+          "stroke-width": 2
+        }));
+
+        if (e.active) {
+          const p = labelPoint(e.fromX, e.fromY, e.toX, e.toY, 0.22, 12);
+          const text = svgEl("text", {
+            x: p.x,
+            y: p.y,
+            fill: "red",
+            "font-size": 12,
+            "text-anchor": "middle"
+          });
+          text.textContent = e.dist;
+          topSvg.appendChild(text);
+        }
+      });
+
+      topData.nodes.forEach((n) => {
+        topSvg.appendChild(svgEl("circle", {
+          cx: n.x,
+          cy: n.y,
+          r: 8.5,
+          fill: "black"
+        }));
+        const label = svgEl("text", {
+          x: n.x - 15,
+          y: n.y - 12,
+          "font-size": 12
+        });
+        label.textContent = n.state;
+        topSvg.appendChild(label);
+      });
+
+      const refX = xStart + xStep * steps + 120;
+      const g = svgEl("g", { transform: `translate(${refX},0)` });
+
+      states.forEach((s) => {
+        const c1 = svgEl("circle", { cx: 0, cy: yPos[s], r: 8.5, fill: "black" });
+        const t1 = svgEl("text", { x: -15, y: yPos[s] - 12, "font-size": 12 });
+        t1.textContent = s;
+        g.appendChild(c1);
+        g.appendChild(t1);
+
+        const c2 = svgEl("circle", { cx: 200, cy: yPos[s], r: 8.5, fill: "black" });
+        const t2 = svgEl("text", { x: 185, y: yPos[s] - 12, "font-size": 12 });
+        t2.textContent = s;
+        g.appendChild(c2);
+        g.appendChild(t2);
+      });
+
+      states.forEach((s) => {
+        transitions[s].forEach((t) => {
+          const fromY = yPos[s];
+          const toY = yPos[t.next];
+          g.appendChild(svgEl("line", {
+            x1: 10,
+            y1: fromY,
+            x2: 200,
+            y2: toY,
+            stroke: "#888",
+            "stroke-width": 1
+          }));
+          const p = labelPoint(10, fromY, 200, toY, 0.22, 12);
+          const text = svgEl("text", {
+            x: p.x,
+            y: p.y,
+            "font-size": 11,
+            "text-anchor": "middle"
+          });
+          text.textContent = `${t.input}/${t.out}`;
+          g.appendChild(text);
+        });
+      });
+
+      topSvg.appendChild(g);
+
+      bottomData.survivorEdges.forEach((e) => {
+        const fromX = xStart + (e.j - 1) * xStep;
+        const toX = xStart + e.j * xStep;
+        const fromY = yPos[e.from];
+        const toY = yPos[e.to];
+        bottomSvg.appendChild(svgEl("line", {
+          x1: fromX,
+          y1: fromY,
+          x2: toX,
+          y2: toY,
+          stroke: bottomData.finalPathEdges.has(`${e.from}-${e.to}-${e.j}`) ? "blue" : "green",
+          "stroke-width": 3
+        }));
+      });
+
+      bottomData.nodes.forEach((n) => {
+        bottomSvg.appendChild(svgEl("circle", {
+          cx: n.x,
+          cy: n.y,
+          r: 8.5,
+          fill: "black"
+        }));
+        const label = svgEl("text", {
+          x: n.x - 15,
+          y: n.y - 12,
+          "font-size": 12
+        });
+        label.textContent = n.state;
+        bottomSvg.appendChild(label);
+
+        if (
+          bottomData.survivorNodeSet.has(`${n.state}-${n.j}`) &&
+          bottomData.metrics[n.j] &&
+          bottomData.metrics[n.j][n.state] !== undefined
+        ) {
+          const m = svgEl("text", {
+            x: n.x,
+            y: n.y + 22,
+            "text-anchor": "middle",
+            "font-size": 14,
+            fill: "green"
+          });
+          m.textContent = bottomData.metrics[n.j][n.state];
+          bottomSvg.appendChild(m);
+        }
+      });
+
+      if (bottomData.decodedBits) {
+        const out = svgEl("g", { transform: `translate(${refX},72)` });
+
+        const a = svgEl("text", { "font-size": 14, "font-weight": "bold" });
+        a.textContent = "Decoded Bit Sequence:";
+        out.appendChild(a);
+
+        const b = svgEl("text", { y: 20, "font-size": 14 });
+        b.textContent = bottomData.decodedBits;
+        out.appendChild(b);
+
+        const c = svgEl("text", { y: 52, "font-size": 14, "font-weight": "bold" });
+        c.textContent = "Decoded Information Sequence:";
+        out.appendChild(c);
+
+        const d = svgEl("text", { y: 70, "font-size": 14 });
+        d.textContent = bottomData.decodedInfo;
+        out.appendChild(d);
+
+        bottomSvg.appendChild(out);
+      }
+
+      stepText.textContent = `Top step: ${topStep} / ${steps}   |   Bottom step: ${bottomStep} / ${steps}`;
+    }
+
+    seqInput.addEventListener("input", () => {
+      const steps = Math.floor(cleanSeq(seqInput.value).length / 2);
+      if (actionStep > 2 * steps) actionStep = 2 * steps;
+      render();
+    });
+
+    nextBtn.addEventListener("click", () => {
+      const steps = Math.floor(cleanSeq(seqInput.value).length / 2);
+      actionStep = Math.min(actionStep + 1, 2 * steps);
+      render();
+    });
+
+    backBtn.addEventListener("click", () => {
+      actionStep = Math.max(actionStep - 1, 0);
+      render();
+    });
+
+    resetBtn.addEventListener("click", () => {
+      actionStep = 0;
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>

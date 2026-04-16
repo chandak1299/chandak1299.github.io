@@ -18,16 +18,20 @@ _**Google Scholar page [HERE](https://scholar.google.com/citations?user=czi8jdYA
 
 <a id="multi-agent-control"></a>
 
-### Multi-Agent Control
-- **Learning to Control Unknown Strongly Monotone Games**  
-S. Chandak, I. Bistritz and N. Bambos  
-_IEEE Transactions on Control of Network Systems (TCNS), to appear_  
-[[arXiv](https://arxiv.org/abs/2407.00575)] [[slides - EPFL Seminar](Slides/Talk_Strongly_Monotone_EPFL.pdf)]
+### Multi-Agent Learning and Control
+- **Last-Iterate Guarantees for Learning in Co-coercive Games**  
+S. Chandak, R. Tamizholi and N. Bambos  
+Submitted to _IEEE Conference on Decision and Control (CDC), 2023_   
 
 - **Choose Your Battles: Distributed Learning Over Multiple Tug of War Games**  
 S. Chandak, I. Bistritz and N. Bambos  
 _IEEE Transactions on Automatic Control (TAC), to appear_  
-[[arXiv](https://arxiv.org/abs/2509.20147)]
+[[paper](https://ieeexplore.ieee.org/document/11480947)] [[arXiv](https://arxiv.org/abs/2509.20147)]
+
+- **Learning to Control Unknown Strongly Monotone Games**  
+S. Chandak, I. Bistritz and N. Bambos  
+_IEEE Transactions on Control of Network Systems (TCNS), to appear_  
+[[paper](https://ieeexplore.ieee.org/abstract/document/11429072)] [[arXiv](https://arxiv.org/abs/2407.00575)] [[slides - EPFL Seminar](Slides/Talk_Strongly_Monotone_EPFL.pdf)]
 
 - **Tug of Peace: Distributed Learning for Quality of Service Guarantees**  
 S. Chandak, I. Bistritz and N. Bambos  
@@ -46,29 +50,40 @@ _International Conference on Autonomous Agents and Multiagent Systems (AAMAS), 2
 - **Learning to Speak on Behalf of a Group: Medium Access Control for Sending a Shared Message**  
 S. U. Haque, S. Chandak, F. Chiariotti, D. Günduz and P. Popovski  
 _IEEE Communications Letters, August 2022_   
-[[paper](https://ieeexplore.ieee.org/document/9792282)]
+[[paper](https://ieeexplore.ieee.org/document/9792282)] [[arXiv](https://arxiv.org/abs/2202.00401)]
 
 <a id="tts-sa"></a>
 
 ### Two-Time-Scale Stochastic Approximation
+- **Non-Expansive Mappings in Two-Time-Scale Stochastic Approximation: Finite Time Analysis**  
+S. Chandak  
+_SIAM Journal on Control and Optimization, to appear_  
+[[arXiv](https://arxiv.org/abs/2501.10806)] 
+[[slides - INFORMS APS 2025](Slides/INFORMS_APS_Talk.pdf)]
+
 - **O(1/k) Finite-Time Bound for Non-Linear Two-Time-Scale Stochastic Approximation**  
+S. Chandak  
 Submitted to _IEEE Transactions on Automatic Control (TAC)_  
 [[arXiv](https://arxiv.org/abs/2504.19375)] [[slides - INFORMS Annual Meeting 2025](Slides/INFORMS_Annual_Meeting_Talk.pdf)]
 
 - **Finite-Time Bounds for Two-Time-Scale Stochastic Approximation with Arbitrary Norm Contractions and Markovian Noise**  
 S. Chandak, S. U. Haque, N. Bambos  
 _IEEE Conference on Decision and Control (CDC), 2025_  
-[[arXiv](https://arxiv.org/abs/2503.18391)] [[slides](Slides/TTS_Expectation_CDC_Presentation.pdf)]  
-
-- **Non-Expansive Mappings in Two-Time-Scale Stochastic Approximation: Finite Time Analysis**  
-S. Chandak  
-Submitted to _SIAM Journal on Control and Optimization_  
-[[arXiv](https://arxiv.org/abs/2501.10806)] 
-[[slides - INFORMS APS 2025](Slides/INFORMS_APS_Talk.pdf)]
+[[paper](https://ieeexplore.ieee.org/document/11312393)] [[arXiv](https://arxiv.org/abs/2503.18391)] [[slides](Slides/TTS_Expectation_CDC_Presentation.pdf)]  
 
 <a id="rl-and-sa"></a>
 
 ### Reinforcement Learning and Stochastic Approximation
+- **Heavy-Tailed and Long-Range Dependent Noise in Stochastic Approximation: A Finite-Time Analysis**  
+S. Chandak, A. Yadav, A. Ozgur, and N. Bambos  
+Submitted to _IEEE Transactions on Automatic Control (TAC)_  
+[[arXiv](https://arxiv.org/abs/2603.19648)]
+
+- **High-Probability Bounds for SGD under the Polyak-Łojasiewicz Condition with Markovian Noise**  
+A. Kar, S. Chandak, R. Singh, E. Moulines, S. Bhatnagar, and N. Bambos  
+Submitted to _SIAM Journal on Optimization_  
+[[arXiv](https://arxiv.org/abs/2603.14514)]
+
 - **Regret and Sample Complexity of Online Q-Learning via Concentration of Stochastic Approximation with Time-Inhomogeneous Markov Chains**  
 R. Singh, S. Chandak, E. Moulines, V. S. Borkar and N. Bambos  
 Submitted to _International Conference on Machine Learning (ICML), 2026_  
@@ -76,8 +91,8 @@ Submitted to _International Conference on Machine Learning (ICML), 2026_
 
 - **A Concentration Bound for TD(0) with Function Approximation**  
 S. Chandak and V. S. Borkar  
-_Stochastic Systems, to appear_  
-[[arXiv](https://arxiv.org/abs/2312.10424)]
+_Stochastic Systems, March 2026_  
+[[paper](https://pubsonline.informs.org/doi/10.1287/stsy.2023.0055)] [[arXiv](https://arxiv.org/abs/2312.10424)]
 
 - **Reinforcement Learning in Non-Markovian Environments**  
 S. Chandak, P. Shah, V. S. Borkar and P. Dodhia  
@@ -105,7 +120,7 @@ _Systems and Control Letters, October 2021_
 - **Optimal Control for Remote Patient Monitoring with Multidimensional Health States**  
 S. Chandak, I. Thapa, N. Bambos and D. Scheinker  
 _IEEE International Conference on Communications (ICC), 2025_  
-[[arXiv](https://arxiv.org/abs/2503.02292)] [[slides](Slides/Monitoring_ICC25.pdf)]
+[[paper](https://ieeexplore.ieee.org/document/11161852)] [[arXiv](https://arxiv.org/abs/2503.02292)] [[slides](Slides/Monitoring_ICC25.pdf)]
 
 - **Tiered Service Architecture for Remote Patient Monitoring**  
 S. Chandak, I. Thapa, N. Bambos and D. Scheinker  

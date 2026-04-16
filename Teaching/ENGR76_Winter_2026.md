@@ -14,7 +14,6 @@ This page contains the materials I developed for ENGR 76 in Winter 2026, includi
 <a id="info"></a>
 
 ### Course Information
-### Course Information
 This course introduces undergraduate students to the principles and techniques underlying modern information and communication systems. Topics include source coding, frequency-domain representations, and error-correcting codes.  
 
 There are no substantial mathematical prerequisites; relevant tools, including probability and Fourier methods, are developed from first principles throughout the course.  

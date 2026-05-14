@@ -21,16 +21,17 @@ _**Google Scholar page [HERE](https://scholar.google.com/citations?user=czi8jdYA
 ### Multi-Agent Learning and Control
 - **Last-Iterate Guarantees for Learning in Co-coercive Games**  
 S. Chandak, R. Tamizholi and N. Bambos  
-Submitted to _IEEE Conference on Decision and Control (CDC), 2023_   
+Submitted to _IEEE Conference on Decision and Control (CDC), 2026_   
+[[arXiv](https://arxiv.org/abs/2604.19065)]
 
 - **Choose Your Battles: Distributed Learning Over Multiple Tug of War Games**  
 S. Chandak, I. Bistritz and N. Bambos  
-_IEEE Transactions on Automatic Control (TAC), to appear_  
+_IEEE Transactions on Automatic Control (TAC), 2026_  
 [[paper](https://ieeexplore.ieee.org/document/11480947)] [[arXiv](https://arxiv.org/abs/2509.20147)]
 
 - **Learning to Control Unknown Strongly Monotone Games**  
 S. Chandak, I. Bistritz and N. Bambos  
-_IEEE Transactions on Control of Network Systems (TCNS), to appear_  
+_IEEE Transactions on Control of Network Systems (TCNS), 2026_  
 [[paper](https://ieeexplore.ieee.org/abstract/document/11429072)] [[arXiv](https://arxiv.org/abs/2407.00575)] [[slides - EPFL Seminar](Slides/Talk_Strongly_Monotone_EPFL.pdf)]
 
 - **Tug of Peace: Distributed Learning for Quality of Service Guarantees**  
@@ -55,16 +56,16 @@ _IEEE Communications Letters, August 2022_
 <a id="tts-sa"></a>
 
 ### Two-Time-Scale Stochastic Approximation
+- **O(1/k) Finite-Time Bound for Non-Linear Two-Time-Scale Stochastic Approximation**  
+S. Chandak  
+_IEEE Transactions on Automatic Control (TAC), to appear_  
+[[arXiv](https://arxiv.org/abs/2504.19375)] [[slides - INFORMS Annual Meeting 2025](Slides/INFORMS_Annual_Meeting_Talk.pdf)]  
+
 - **Non-Expansive Mappings in Two-Time-Scale Stochastic Approximation: Finite Time Analysis**  
 S. Chandak  
 _SIAM Journal on Control and Optimization, to appear_  
 [[arXiv](https://arxiv.org/abs/2501.10806)] 
 [[slides - INFORMS APS 2025](Slides/INFORMS_APS_Talk.pdf)]
-
-- **O(1/k) Finite-Time Bound for Non-Linear Two-Time-Scale Stochastic Approximation**  
-S. Chandak  
-Submitted to _IEEE Transactions on Automatic Control (TAC)_  
-[[arXiv](https://arxiv.org/abs/2504.19375)] [[slides - INFORMS Annual Meeting 2025](Slides/INFORMS_Annual_Meeting_Talk.pdf)]
 
 - **Finite-Time Bounds for Two-Time-Scale Stochastic Approximation with Arbitrary Norm Contractions and Markovian Noise**  
 S. Chandak, S. U. Haque, N. Bambos  
@@ -74,6 +75,16 @@ _IEEE Conference on Decision and Control (CDC), 2025_
 <a id="rl-and-sa"></a>
 
 ### Reinforcement Learning and Stochastic Approximation
+- **Policy Gradient Methods for Non-Markovian Reinforcement Learning**  
+A. Kar, S. Chandak, R. Singh, E. Moulines, S. Bhatnagar, and N. Bambos  
+Submitted to _NeurIPS, 2026_  
+[[arXiv](https://arxiv.org/abs/2605.10816)]
+
+- **Regret and Sample Complexity of Online Q-Learning via Concentration of Stochastic Approximation with Time-Inhomogeneous Markov Chains**  
+R. Singh, S. Chandak, E. Moulines, V. S. Borkar and N. Bambos  
+Submitted to _NeurIPS, 2026_  
+[[arXiv](https://arxiv.org/abs/2602.16274)]
+
 - **Heavy-Tailed and Long-Range Dependent Noise in Stochastic Approximation: A Finite-Time Analysis**  
 S. Chandak, A. Yadav, A. Ozgur, and N. Bambos  
 Submitted to _IEEE Transactions on Automatic Control (TAC)_  
@@ -83,11 +94,6 @@ Submitted to _IEEE Transactions on Automatic Control (TAC)_
 A. Kar, S. Chandak, R. Singh, E. Moulines, S. Bhatnagar, and N. Bambos  
 Submitted to _SIAM Journal on Optimization_  
 [[arXiv](https://arxiv.org/abs/2603.14514)]
-
-- **Regret and Sample Complexity of Online Q-Learning via Concentration of Stochastic Approximation with Time-Inhomogeneous Markov Chains**  
-R. Singh, S. Chandak, E. Moulines, V. S. Borkar and N. Bambos  
-Submitted to _International Conference on Machine Learning (ICML), 2026_  
-[[arXiv](https://arxiv.org/abs/2602.16274)]
 
 - **A Concentration Bound for TD(0) with Function Approximation**  
 S. Chandak and V. S. Borkar  

@@ -144,6 +144,10 @@ _IEEE Communications Letter, May 2021_
 
 ### Invited Talks
 
+- **Optimal Control for Tiered Remote Patient Monitoring**  
+_INFORMS Healthcare Conference_, July 2026  
+[[slides](Slides/INFORMS_Healthcare_presentation.pdf)]
+
 - **Learning to Control Unknown Strongly Monotone Games**  
 _Seminar at Automatic Control Lab, EPFL_, March 2026  
 [[slides](Slides/Talk_Strongly_Monotone_EPFL.pdf)]

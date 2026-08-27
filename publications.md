@@ -21,7 +21,7 @@ _**Google Scholar page [HERE](https://scholar.google.com/citations?user=czi8jdYA
 ### Multi-Agent Learning and Control
 - **Last-Iterate Guarantees for Learning in Co-coercive Games**  
 S. Chandak, R. Tamizholi and N. Bambos  
-Submitted to _IEEE Conference on Decision and Control (CDC), 2026_   
+_IEEE Conference on Decision and Control (CDC), 2026, to be presented_   
 [[arXiv](https://arxiv.org/abs/2604.19065)]
 
 - **Choose Your Battles: Distributed Learning Over Multiple Tug of War Games**  
@@ -50,7 +50,7 @@ _International Conference on Autonomous Agents and Multiagent Systems (AAMAS), 2
 
 - **Learning to Speak on Behalf of a Group: Medium Access Control for Sending a Shared Message**  
 S. U. Haque, S. Chandak, F. Chiariotti, D. Günduz and P. Popovski  
-_IEEE Communications Letters, August 2022_   
+_IEEE Communications Letters, 2022_   
 [[paper](https://ieeexplore.ieee.org/document/9792282)] [[arXiv](https://arxiv.org/abs/2202.00401)]
 
 <a id="tts-sa"></a>
@@ -58,13 +58,13 @@ _IEEE Communications Letters, August 2022_
 ### Two-Time-Scale Stochastic Approximation
 - **O(1/k) Finite-Time Bound for Non-Linear Two-Time-Scale Stochastic Approximation**  
 S. Chandak  
-_IEEE Transactions on Automatic Control (TAC), to appear_  
-[[arXiv](https://arxiv.org/abs/2504.19375)] [[slides - INFORMS Annual Meeting 2025](Slides/INFORMS_Annual_Meeting_Talk.pdf)]  
+_IEEE Transactions on Automatic Control (TAC), 2026_  
+[[paper](https://ieeexplore.ieee.org/document/11523503)] [[arXiv](https://arxiv.org/abs/2504.19375)] [[slides - INFORMS Annual Meeting 2025](Slides/INFORMS_Annual_Meeting_Talk.pdf)]  
 
-- **Non-Expansive Mappings in Two-Time-Scale Stochastic Approximation: Finite Time Analysis**  
+- **Nonexpansive Mappings in Two-Time-Scale Stochastic Approximation: Finite Time Analysis**  
 S. Chandak  
-_SIAM Journal on Control and Optimization, to appear_  
-[[arXiv](https://arxiv.org/abs/2501.10806)] 
+_SIAM Journal on Control and Optimization, 2026_  
+[[paper](https://epubs.siam.org/doi/abs/10.1137/25M1725000)] [[arXiv](https://arxiv.org/abs/2501.10806)] 
 [[slides - INFORMS APS 2025](Slides/INFORMS_APS_Talk.pdf)]
 
 - **Finite-Time Bounds for Two-Time-Scale Stochastic Approximation with Arbitrary Norm Contractions and Markovian Noise**  
@@ -75,6 +75,11 @@ _IEEE Conference on Decision and Control (CDC), 2025_
 <a id="rl-and-sa"></a>
 
 ### Reinforcement Learning and Stochastic Approximation
+- **Concentration and Mean-Square Bounds for Contractive Stochastic Approximation: A Unified Elementary Approach**  
+S. Chandak  
+Submitted to _Mathematics of Control, Signals, and Systems_  
+[[arXiv](https://arxiv.org/abs/2607.17595)]
+
 - **Policy Gradient Methods for Non-Markovian Reinforcement Learning**  
 A. Kar, S. Chandak, R. Singh, E. Moulines, S. Bhatnagar, and N. Bambos  
 Submitted to _NeurIPS, 2026_  
@@ -97,27 +102,27 @@ Submitted to _SIAM Journal on Optimization_
 
 - **A Concentration Bound for TD(0) with Function Approximation**  
 S. Chandak and V. S. Borkar  
-_Stochastic Systems, March 2026_  
+_Stochastic Systems, 2026_  
 [[paper](https://pubsonline.informs.org/doi/10.1287/stsy.2023.0055)] [[arXiv](https://arxiv.org/abs/2312.10424)]
 
 - **Reinforcement Learning in Non-Markovian Environments**  
 S. Chandak, P. Shah, V. S. Borkar and P. Dodhia  
-_Systems and Control Letters, March 2024_  
+_Systems and Control Letters, 2024_  
 [[paper](https://www.sciencedirect.com/science/article/pii/S0167691124000392)] [[arXiv](https://arxiv.org/abs/2211.01595)]
 
 - **A Concentration Bound for LSPE($\lambda$)**  
 S. Chandak, V. S. Borkar and H. Dolhare  
-_Systems and Control Letters, January 2023_    
+_Systems and Control Letters, 2023_    
 [[paper](https://www.sciencedirect.com/science/article/abs/pii/S0167691122001955)] [[arXiv](https://arxiv.org/abs/2111.02644)]
 
 - **Concentration of Contractive Stochastic Approximation and Reinforcement Learning**  
 S. Chandak, V. S. Borkar and P. Dodhia  
-_Stochastic Systems, December 2022_   
+_Stochastic Systems, 2022_   
 [[paper](https://pubsonline.informs.org/doi/10.1287/stsy.2022.0097)] [[slides](Slides/BTP2-Presentation.pdf)]
 
 - **Prospect-theoretic Q-learning**  
 V. S. Borkar and S. Chandak  
-_Systems and Control Letters, October 2021_    
+_Systems and Control Letters, 2021_    
 [[paper](https://www.sciencedirect.com/science/article/abs/pii/S0167691121001390)] [[arXiv](https://arxiv.org/abs/2104.05311)] [[slides](Slides/BTP1-Presentation.pdf)]
 
 <a id="dp"></a>

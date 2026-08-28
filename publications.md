@@ -149,13 +149,14 @@ _IEEE Communications Letter, May 2021_
 
 ### Invited Talks
 
+- **Learning to Control Unknown Strongly Monotone Games**  
+    - _AI Cities Workshop, New York University_, August 2026  
+    - _Seminar at Automatic Control Lab, EPFL_, March 2026  
+[[slides](Slides/Talk_Strongly_Monotone_Games.pdf)]
+
 - **Optimal Control for Tiered Remote Patient Monitoring**  
 _INFORMS Healthcare Conference_, July 2026  
 [[slides](Slides/INFORMS_Healthcare_presentation.pdf)]
-
-- **Learning to Control Unknown Strongly Monotone Games**  
-_Seminar at Automatic Control Lab, EPFL_, March 2026  
-[[slides](Slides/Talk_Strongly_Monotone_EPFL.pdf)]
 
 - **O(1/k) Finite-Time Bound for Non-Linear Two-Time-Scale Stochastic Approximation**  
 _INFORMS Annual Meeting_, October 2025  

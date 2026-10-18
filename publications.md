@@ -32,7 +32,7 @@ _IEEE Transactions on Automatic Control (TAC), 2026_
 - **Learning to Control Unknown Strongly Monotone Games**  
 S. Chandak, I. Bistritz and N. Bambos  
 _IEEE Transactions on Control of Network Systems (TCNS), 2026_  
-[[paper](https://ieeexplore.ieee.org/abstract/document/11429072)] [[arXiv](https://arxiv.org/abs/2407.00575)] [[slides - EPFL Seminar](Slides/Talk_Strongly_Monotone_EPFL.pdf)]
+[[paper](https://ieeexplore.ieee.org/abstract/document/11429072)] [[arXiv](https://arxiv.org/abs/2407.00575)] [[slides - EPFL Seminar](Slides/Talk_Strongly_Monotone_Games.pdf)]
 
 - **Tug of Peace: Distributed Learning for Quality of Service Guarantees**  
 S. Chandak, I. Bistritz and N. Bambos  

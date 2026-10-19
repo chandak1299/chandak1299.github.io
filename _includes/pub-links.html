@@ -1,0 +1,15 @@
+{%- comment -%}
+  Renders a links map from _data/publications.yml or _data/talks.yml as
+  [label] [label] ... Full URLs are used as-is; other paths are treated as
+  files on this site (e.g. Slides/talk.pdf).
+{%- endcomment -%}
+{%- for link in include.links -%}
+  {%- assign url = link[1] -%}
+  {%- unless url contains '://' -%}
+    {%- assign first = url | slice: 0 -%}
+    {%- unless first == '/' -%}{%- assign url = url | prepend: '/' -%}{%- endunless -%}
+    {%- assign url = url | relative_url -%}
+  {%- endunless -%}
+  {%- unless forloop.first %}{{ ' ' }}{% endunless -%}
+  [<a href="{{ url }}">{{ link[0] | escape }}</a>]
+{%- endfor -%}

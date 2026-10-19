@@ -1,0 +1,46 @@
+# Invited talks on the publications page, in the order listed here.
+#
+# Each talk:
+#   title:  the talk title (keep it in quotes)
+#   venues: one or more, each with a name (shown in italics) and a date
+#   links:  optional, shown as [label] in the order listed
+
+- title: "Learning to Control Unknown Strongly Monotone Games"
+  venues:
+    - name: AI Cities Workshop, New York University
+      date: August 2026
+    - name: Seminar at Automatic Control Lab, EPFL
+      date: March 2026
+  links:
+    slides: Slides/Talk_Strongly_Monotone_Games.pdf
+
+- title: "Optimal Control for Tiered Remote Patient Monitoring"
+  venues:
+    - name: INFORMS Healthcare Conference
+      date: July 2026
+  links:
+    slides: Slides/INFORMS_Healthcare_presentation.pdf
+
+- title: "O(1/k) Finite-Time Bound for Non-Linear Two-Time-Scale Stochastic Approximation"
+  venues:
+    - name: INFORMS Annual Meeting
+      date: October 2025
+  links:
+    slides: Slides/INFORMS_Annual_Meeting_Talk.pdf
+
+- title: "Learning to Control Unknown Multi-Agent Systems"
+  venues:
+    - name: Department of Electrical Engineering Seminar, IIT Bombay
+      date: September 2025
+    - name: STCS Seminar, Tata Institute of Fundamental Research (TIFR) Mumbai
+      date: September 2025
+  links:
+    slides: Slides/Talk_Multi_Agent_Systems.pdf
+    video - TIFR: https://www.youtube.com/live/2XChzJdpFYI?si=yDtFWDK5iMYR5lqR
+
+- title: "Non-Expansive Mappings in Two-Time-Scale Stochastic Approximation"
+  venues:
+    - name: INFORMS Applied Probability Society Conference
+      date: July 2025
+  links:
+    slides: Slides/INFORMS_APS_Talk.pdf

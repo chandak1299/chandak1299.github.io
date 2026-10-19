@@ -1,0 +1,136 @@
+---
+layout: null
+---
+
+/* Site-wide style overrides, loaded after the theme's main.css. */
+
+/* --- Font --- */
+
+body,
+h1, h2, h3, h4, h5, h6,
+.navbar-custom,
+footer .copyright,
+.intro-header .page-heading .page-subheading {
+  font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+body {
+  font-size: 16px;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+}
+
+/* --- Keep the footer at the bottom of the window on short pages --- */
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+body > [role="main"] {
+  flex: 1 0 auto;
+}
+/* In a flex column, the container's auto side margins would otherwise shrink
+   it to its content; restore full width except where Bootstrap sets a fixed
+   width (768-991px) */
+@media only screen and (max-width: 767px), only screen and (min-width: 992px) {
+  body > [role="main"] {
+    width: 100%;
+  }
+}
+
+/* --- Text column width (laptop/desktop only; phones and tablets keep
+       the theme's full-width column) --- */
+
+@media only screen and (min-width: 992px) {
+  .container {
+    width: auto;
+    max-width: 880px; /* 850px of text + 15px padding on each side */
+  }
+  .container[role="main"] > .row > div,
+  .intro-header .container > .row > div {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+
+/* --- Page title and spacing --- */
+
+.intro-header {
+  margin-bottom: 0;
+}
+.intro-header .page-heading h1 {
+  font-size: 36px;
+  margin-bottom: 0;
+}
+@media only screen and (min-width: 768px) {
+  .intro-header {
+    margin-top: 125px;
+  }
+  .intro-header .page-heading h1 {
+    font-size: 44px;
+  }
+}
+[role="main"] li > p {
+  margin: 0 0 12px;
+}
+[role="main"] h2 {
+  margin-top: 32px;
+}
+[role="main"] h3 {
+  margin-top: 24px;
+}
+
+/* Keep headings reached through #anchor links from hiding under the fixed
+   navbar (about 50px tall once the page is scrolled) */
+[role="main"] [id] {
+  scroll-margin-top: 70px;
+}
+
+/* --- Navbar menu links --- */
+
+.navbar-custom .nav li a {
+  font-size: 14px;
+}
+
+/* --- Publications page (markup from publications.md): plain titles
+       slightly larger than the details, own name bold --- */
+
+.pub-page .pub-title {
+  font-weight: 400;
+  font-size: 1.04em;
+}
+.pub-page .pub-me {
+  font-weight: 700;
+}
+/* Keep [paper] / [slides - ...] links from breaking across lines */
+.pub-page li > p a {
+  white-space: nowrap;
+}
+.pub-page .pub-talks > li {
+  margin-bottom: 12px;
+}
+.pub-page .pub-talks li > p,
+.pub-page .pub-talks ul {
+  margin: 0;
+}
+.pub-page .pub-subheading {
+  font-size: 17px;
+  font-weight: 600;
+  font-style: italic;
+  color: #555;
+  margin: 20px 0 10px;
+}
+
+/* --- Teaching page: keep short [slides] / [demo] links from breaking
+       across lines --- */
+
+#lecture-outline-and-slides + ul a {
+  white-space: nowrap;
+}
+
+/* --- Contact page --- */
+
+.contact-info {
+  font-size: 18px;
+}

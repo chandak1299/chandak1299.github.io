@@ -1,0 +1,8 @@
+# Ph.D. thesis, shown under its own heading after the papers. Same fields as a
+# paper in publications.yml; authors is optional.
+
+- title: "Learning to Control Unknown Multi-Agent Systems for Guided Distributed Intelligence"
+  venue: Ph.D. Thesis, Department of Electrical Engineering, Stanford University, 2026
+  links:
+    thesis: https://purl.stanford.edu/dc159xb3475
+    defense slides: Slides/Defense_Talk.pdf

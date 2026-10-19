@@ -4,6 +4,5 @@ title: Contact
 permalink: /contact/
 ---
 
-## Email
-[chandaks@stanford.edu](mailto: chandaks@stanford.edu)<br/>
-[chandak1299@gmail.com](mailto: chandak1299@gmail.com)<br/>
+<p class="contact-info"><strong>Email:</strong><br />
+<a href="mailto:chandak1299@gmail.com">chandak1299@gmail.com</a></p>

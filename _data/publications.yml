@@ -1,0 +1,189 @@
+# Papers on the publications page, grouped into sections. Sections and papers
+# appear in the order listed here.
+#
+# Each paper:
+#   title:   the paper title (keep it in quotes)
+#   authors: the author list; "S. Chandak" is bolded automatically
+#   venue:   free text, shown in italics (e.g. "Submitted to NeurIPS, 2026")
+#   links:   optional, shown as [label] in the order listed. Use a full URL, or a
+#            path to a file on this site such as Slides/talk.pdf
+#
+# To split a section into sub-headings, put a line like
+#   - subheading: Two-Time-Scale Stochastic Approximation
+# in its papers list; the papers after it (up to the next subheading) go under it.
+#
+# Each section has a name, an id (the #anchor used by the table of contents) and
+# optionally a shorter toc label.
+
+- section: Multi-Agent Learning and Control
+  id: multi-agent-control
+  papers:
+    - title: "Last-Iterate Guarantees for Learning in Co-coercive Games"
+      authors: S. Chandak, R. Tamizholi and N. Bambos
+      venue: IEEE Conference on Decision and Control (CDC), 2026, to be presented
+      links:
+        arXiv: https://arxiv.org/abs/2604.19065
+
+    - title: "Choose Your Battles: Distributed Learning Over Multiple Tug of War Games"
+      authors: S. Chandak, I. Bistritz and N. Bambos
+      venue: IEEE Transactions on Automatic Control (TAC), 2026
+      links:
+        paper: https://ieeexplore.ieee.org/document/11480947
+        arXiv: https://arxiv.org/abs/2509.20147
+
+    - title: "Learning to Control Unknown Strongly Monotone Games"
+      authors: S. Chandak, I. Bistritz and N. Bambos
+      venue: IEEE Transactions on Control of Network Systems (TCNS), 2026
+      links:
+        paper: https://ieeexplore.ieee.org/abstract/document/11429072
+        arXiv: https://arxiv.org/abs/2407.00575
+        slides - EPFL Seminar: Slides/Talk_Strongly_Monotone_Games.pdf
+
+    - title: "Tug of Peace: Distributed Learning for Quality of Service Guarantees"
+      authors: S. Chandak, I. Bistritz and N. Bambos
+      venue: IEEE Conference on Decision and Control (CDC), 2023
+      links:
+        paper: https://ieeexplore.ieee.org/document/10383757
+        full version: Papers/QoS-CDC-full.pdf
+        slides: Slides/QoS_CDC_Presentation.pdf
+
+    - title: "Equilibrium Bandits: Learning Optimal Equilibria of Unknown Dynamics"
+      authors: S. Chandak, I. Bistritz and N. Bambos
+      venue: International Conference on Autonomous Agents and Multiagent Systems (AAMAS), 2023
+      links:
+        paper: https://dl.acm.org/doi/abs/10.5555/3545946.3598781
+        arXiv: https://arxiv.org/abs/2302.13653
+        slides: Slides/AAMAS-Presentation-Equi.pdf
+        poster: Slides/AAMAS-Poster-Equi.pdf
+
+    - title: "Learning to Speak on Behalf of a Group: Medium Access Control for Sending a Shared Message"
+      authors: S. U. Haque, S. Chandak, F. Chiariotti, D. Günduz and P. Popovski
+      venue: IEEE Communications Letters, 2022
+      links:
+        paper: https://ieeexplore.ieee.org/document/9792282
+        arXiv: https://arxiv.org/abs/2202.00401
+
+- section: Reinforcement Learning and Stochastic Approximation
+  id: rl-and-sa
+  papers:
+    - title: "Concentration and Mean-Square Bounds for Contractive Stochastic Approximation: A Unified Elementary Approach"
+      authors: S. Chandak
+      venue: Submitted to Mathematics of Control, Signals, and Systems
+      links:
+        arXiv: https://arxiv.org/abs/2607.17595
+
+    - title: "Policy Gradient Methods for Non-Markovian Reinforcement Learning"
+      authors: A. Kar, S. Chandak, R. Singh, S. Sinhahajari, E. Moulines, S. Bhatnagar, and N. Bambos
+      venue: Preprint
+      links:
+        arXiv: https://arxiv.org/abs/2605.10816
+
+    - title: "Regret and Sample Complexity of Online Q-Learning via Concentration of Stochastic Approximation with Time-Inhomogeneous Markov Chains"
+      authors: R. Singh, S. Chandak, E. Moulines, V. S. Borkar and N. Bambos
+      venue: Preprint
+      links:
+        arXiv: https://arxiv.org/abs/2602.16274
+
+    - title: "Heavy-Tailed and Long-Range Dependent Noise in Stochastic Approximation: A Finite-Time Analysis"
+      authors: S. Chandak, A. Yadav, A. Ozgur, and N. Bambos
+      venue: Submitted to IEEE Transactions on Automatic Control (TAC)
+      links:
+        arXiv: https://arxiv.org/abs/2603.19648
+
+    - title: "High-Probability Bounds for SGD under the Polyak-Łojasiewicz Condition with Markovian Noise"
+      authors: A. Kar, S. Chandak, R. Singh, E. Moulines, S. Bhatnagar, and N. Bambos
+      venue: Submitted to SIAM Journal on Optimization
+      links:
+        arXiv: https://arxiv.org/abs/2603.14514
+
+    - title: "O(1/k) Finite-Time Bound for Non-Linear Two-Time-Scale Stochastic Approximation"
+      authors: S. Chandak
+      venue: IEEE Transactions on Automatic Control (TAC), 2026
+      links:
+        paper: https://ieeexplore.ieee.org/document/11523503
+        arXiv: https://arxiv.org/abs/2504.19375
+        slides - INFORMS Annual Meeting 2025: Slides/INFORMS_Annual_Meeting_Talk.pdf
+
+    - title: "Nonexpansive Mappings in Two-Time-Scale Stochastic Approximation: Finite-Time Analysis"
+      authors: S. Chandak
+      venue: SIAM Journal on Control and Optimization, 2026
+      links:
+        paper: https://epubs.siam.org/doi/abs/10.1137/25M1725000
+        arXiv: https://arxiv.org/abs/2501.10806
+        slides - INFORMS APS 2025: Slides/INFORMS_APS_Talk.pdf
+
+    - title: "Finite-Time Bounds for Two-Time-Scale Stochastic Approximation with Arbitrary Norm Contractions and Markovian Noise"
+      authors: S. Chandak, S. U. Haque, and N. Bambos
+      venue: IEEE Conference on Decision and Control (CDC), 2025
+      links:
+        paper: https://ieeexplore.ieee.org/document/11312393
+        arXiv: https://arxiv.org/abs/2503.18391
+        slides: Slides/TTS_Expectation_CDC_Presentation.pdf
+
+    - title: "A Concentration Bound for TD(0) with Function Approximation"
+      authors: S. Chandak and V. S. Borkar
+      venue: Stochastic Systems, 2026
+      links:
+        paper: https://pubsonline.informs.org/doi/10.1287/stsy.2023.0055
+        arXiv: https://arxiv.org/abs/2312.10424
+
+    - title: "Reinforcement Learning in Non-Markovian Environments"
+      authors: S. Chandak, P. Shah, V. S. Borkar and P. Dodhia
+      venue: Systems and Control Letters, 2024
+      links:
+        paper: https://www.sciencedirect.com/science/article/pii/S0167691124000392
+        arXiv: https://arxiv.org/abs/2211.01595
+
+    - title: "A Concentration Bound for LSPE(λ)"
+      authors: S. Chandak, V. S. Borkar and H. Dolhare
+      venue: Systems and Control Letters, 2023
+      links:
+        paper: https://www.sciencedirect.com/science/article/abs/pii/S0167691122001955
+        arXiv: https://arxiv.org/abs/2111.02644
+
+    - title: "Concentration of Contractive Stochastic Approximation and Reinforcement Learning"
+      authors: S. Chandak, V. S. Borkar and P. Dodhia
+      venue: Stochastic Systems, 2022
+      links:
+        paper: https://pubsonline.informs.org/doi/10.1287/stsy.2022.0097
+        slides: Slides/BTP2-Presentation.pdf
+
+    - title: "Prospect-theoretic Q-learning"
+      authors: V. S. Borkar and S. Chandak
+      venue: Systems and Control Letters, 2021
+      links:
+        paper: https://www.sciencedirect.com/science/article/abs/pii/S0167691121001390
+        arXiv: https://arxiv.org/abs/2104.05311
+        slides: Slides/BTP1-Presentation.pdf
+
+- section: Applications of Dynamic Programming
+  id: dp
+  papers:
+    - title: "Safe Learning of Adaptive Control Policies for Remote Patient Monitoring"
+      authors: R. Tamizholi, S. Chandak, I. Thapa, N. Bambos and D. Scheinker
+      venue: IEEE Healthcom, 2026
+      links:
+        arXiv: https://arxiv.org/abs/2610.10720
+
+    - title: "Optimal Control for Remote Patient Monitoring with Multidimensional Health States"
+      authors: S. Chandak, I. Thapa, N. Bambos and D. Scheinker
+      venue: IEEE International Conference on Communications (ICC), 2025
+      links:
+        paper: https://ieeexplore.ieee.org/document/11161852
+        arXiv: https://arxiv.org/abs/2503.02292
+        slides: Slides/Monitoring_ICC25.pdf
+
+    - title: "Tiered Service Architecture for Remote Patient Monitoring"
+      authors: S. Chandak, I. Thapa, N. Bambos and D. Scheinker
+      venue: IEEE Healthcom, 2024
+      links:
+        paper: https://ieeexplore.ieee.org/document/10880780
+        arXiv: https://arxiv.org/abs/2406.18000
+        slides: Slides/Monitoring_Healthcom24.pdf
+
+    - title: "Hidden Markov Model-Based Encoding for Time-Correlated IoT Sources"
+      authors: S. Chandak, F. Chiariotti and P. Popovski
+      venue: IEEE Communications Letters, 2021
+      links:
+        paper: https://ieeexplore.ieee.org/document/9291435
+        arXiv: https://arxiv.org/abs/2101.07534

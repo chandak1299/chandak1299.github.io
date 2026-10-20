@@ -168,6 +168,7 @@
       venue: IEEE Healthcom, 2026
       links:
         arXiv: https://arxiv.org/abs/2610.10720
+        slides: Slides/Healthcom26_Safe_Learning_RPM.pdf
 
     - title: "Optimal Control for Remote Patient Monitoring with Multidimensional Health States"
       authors: S. Chandak, I. Thapa, N. Bambos and D. Scheinker

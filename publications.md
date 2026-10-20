@@ -19,7 +19,16 @@ _**Google Scholar page [HERE](https://scholar.google.com/citations?user=czi8jdYA
   <li><a href="#papers">Papers</a>
     <ul>
       {%- for section in site.data.publications %}
-      <li><a href="#{{ section.id }}">{{ section.toc | default: section.section | escape }}</a></li>
+      <li><a href="#{{ section.id }}">{{ section.toc | default: section.section | escape }}</a>
+        {%- assign subs = section.papers | where_exp: "p", "p.subheading" %}
+        {%- if subs.size > 0 %}
+        <ul>
+          {%- for sub in subs %}
+          <li><a href="#{{ section.id }}-{{ sub.subheading | slugify }}">{{ sub.subheading | escape }}</a></li>
+          {%- endfor %}
+        </ul>
+        {%- endif %}
+      </li>
       {%- endfor %}
     </ul>
   </li>
@@ -39,7 +48,7 @@ _**Google Scholar page [HERE](https://scholar.google.com/citations?user=czi8jdYA
 </ul>
   {%- assign list_open = false %}
   {%- endif %}
-<h4 class="pub-subheading">{{ paper.subheading | escape }}</h4>
+<h4 class="pub-subheading" id="{{ section.id }}-{{ paper.subheading | slugify }}">{{ paper.subheading | escape }}</h4>
   {%- continue %}
   {%- endif %}
   {%- unless list_open %}

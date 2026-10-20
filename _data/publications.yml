@@ -63,20 +63,47 @@
         paper: https://ieeexplore.ieee.org/document/9792282
         arXiv: https://arxiv.org/abs/2202.00401
 
-- section: Reinforcement Learning and Stochastic Approximation
+- section: Stochastic Approximation, Reinforcement Learning, and Optimization
   id: rl-and-sa
   papers:
-    - title: "Concentration and Mean-Square Bounds for Contractive Stochastic Approximation: A Unified Elementary Approach"
-      authors: S. Chandak
-      venue: Submitted to Mathematics of Control, Signals, and Systems
-      links:
-        arXiv: https://arxiv.org/abs/2607.17595
+    - subheading: Algorithms and Frameworks
 
     - title: "Policy Gradient Methods for Non-Markovian Reinforcement Learning"
       authors: A. Kar, S. Chandak, R. Singh, S. Sinhahajari, E. Moulines, S. Bhatnagar, and N. Bambos
       venue: Preprint
       links:
         arXiv: https://arxiv.org/abs/2605.10816
+
+    - title: "Nonexpansive Mappings in Two-Time-Scale Stochastic Approximation: Finite-Time Analysis"
+      authors: S. Chandak
+      venue: SIAM Journal on Control and Optimization, 2026
+      links:
+        paper: https://epubs.siam.org/doi/abs/10.1137/25M1725000
+        arXiv: https://arxiv.org/abs/2501.10806
+        slides - INFORMS APS 2025: Slides/INFORMS_APS_Talk.pdf
+
+    - title: "Reinforcement Learning in Non-Markovian Environments"
+      authors: S. Chandak, P. Shah, V. S. Borkar and P. Dodhia
+      venue: Systems and Control Letters, 2024
+      links:
+        paper: https://www.sciencedirect.com/science/article/pii/S0167691124000392
+        arXiv: https://arxiv.org/abs/2211.01595
+
+    - title: "Prospect-theoretic Q-learning"
+      authors: V. S. Borkar and S. Chandak
+      venue: Systems and Control Letters, 2021
+      links:
+        paper: https://www.sciencedirect.com/science/article/abs/pii/S0167691121001390
+        arXiv: https://arxiv.org/abs/2104.05311
+        slides: Slides/BTP1-Presentation.pdf
+
+    - subheading: Finite-Time Guarantees
+
+    - title: "Concentration and Mean-Square Bounds for Contractive Stochastic Approximation: A Unified Elementary Approach"
+      authors: S. Chandak
+      venue: Submitted to Mathematics of Control, Signals, and Systems
+      links:
+        arXiv: https://arxiv.org/abs/2607.17595
 
     - title: "Regret and Sample Complexity of Online Q-Learning via Concentration of Stochastic Approximation with Time-Inhomogeneous Markov Chains"
       authors: R. Singh, S. Chandak, E. Moulines, V. S. Borkar and N. Bambos
@@ -104,14 +131,6 @@
         arXiv: https://arxiv.org/abs/2504.19375
         slides - INFORMS Annual Meeting 2025: Slides/INFORMS_Annual_Meeting_Talk.pdf
 
-    - title: "Nonexpansive Mappings in Two-Time-Scale Stochastic Approximation: Finite-Time Analysis"
-      authors: S. Chandak
-      venue: SIAM Journal on Control and Optimization, 2026
-      links:
-        paper: https://epubs.siam.org/doi/abs/10.1137/25M1725000
-        arXiv: https://arxiv.org/abs/2501.10806
-        slides - INFORMS APS 2025: Slides/INFORMS_APS_Talk.pdf
-
     - title: "Finite-Time Bounds for Two-Time-Scale Stochastic Approximation with Arbitrary Norm Contractions and Markovian Noise"
       authors: S. Chandak, S. U. Haque, and N. Bambos
       venue: IEEE Conference on Decision and Control (CDC), 2025
@@ -127,13 +146,6 @@
         paper: https://pubsonline.informs.org/doi/10.1287/stsy.2023.0055
         arXiv: https://arxiv.org/abs/2312.10424
 
-    - title: "Reinforcement Learning in Non-Markovian Environments"
-      authors: S. Chandak, P. Shah, V. S. Borkar and P. Dodhia
-      venue: Systems and Control Letters, 2024
-      links:
-        paper: https://www.sciencedirect.com/science/article/pii/S0167691124000392
-        arXiv: https://arxiv.org/abs/2211.01595
-
     - title: "A Concentration Bound for LSPE(λ)"
       authors: S. Chandak, V. S. Borkar and H. Dolhare
       venue: Systems and Control Letters, 2023
@@ -147,14 +159,6 @@
       links:
         paper: https://pubsonline.informs.org/doi/10.1287/stsy.2022.0097
         slides: Slides/BTP2-Presentation.pdf
-
-    - title: "Prospect-theoretic Q-learning"
-      authors: V. S. Borkar and S. Chandak
-      venue: Systems and Control Letters, 2021
-      links:
-        paper: https://www.sciencedirect.com/science/article/abs/pii/S0167691121001390
-        arXiv: https://arxiv.org/abs/2104.05311
-        slides: Slides/BTP1-Presentation.pdf
 
 - section: Applications of Dynamic Programming
   id: dp
